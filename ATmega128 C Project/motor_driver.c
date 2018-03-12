@@ -13,7 +13,12 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void motorInit(void);
+* void motorLeftDrive(int16_t speed);
+* void motorRightDrive(int16_t speed);
+* void motorStop(void);
+* uint8_t moveRobot(float speed, float turnRatio);
+* int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses);
 *
 */
 
@@ -52,23 +57,26 @@
 #define motorLeftSpeed			OCR1A
 #define motorRightSpeed			OCR1B
 
-#define motorLeftFwd			MOTOR_DIR_PORT &= ~MOTOR_LEFT_DIR_PIN
-#define motorLeftRev			MOTOR_DIR_PORT |= MOTOR_LEFT_DIR_PIN
+#define motorLeftFwd			(MOTOR_DIR_PORT &= ~MOTOR_LEFT_DIR_PIN)
+#define motorLeftRev			(MOTOR_DIR_PORT |= MOTOR_LEFT_DIR_PIN)
 #define motorLeftStop			{motorLeftSpeed = 0;}
-#define motorRightFwd			MOTOR_DIR_PORT &= ~MOTOR_RIGHT_DIR_PIN
-#define motorRightRev			MOTOR_DIR_PORT |= MOTOR_RIGHT_DIR_PIN
+#define motorRightFwd			(MOTOR_DIR_PORT &= ~MOTOR_RIGHT_DIR_PIN)
+#define motorRightRev			(MOTOR_DIR_PORT |= MOTOR_RIGHT_DIR_PIN)
 #define motorRightStop			{motorRightSpeed = 0;}
 
-#define motorLeftDir			MOTOR_DIR_PORT & MOTOR_LEFT_DIR_PIN
-#define motorRightDir			MOTOR_DIR_PORT & MOTOR_RIGHT_DIR_PIN
+#define motorLeftDir			(MOTOR_DIR_PORT & MOTOR_LEFT_DIR_PIN)
+#define motorRightDir			(MOTOR_DIR_PORT & MOTOR_RIGHT_DIR_PIN)
 
-#define motorLeftOff			MOTOR_DRIVE_PORT &= ~MOTOR_LEFT_DRIVE_PIN
-#define motorLeftOn				MOTOR_DRIVE_PORT |= MOTOR_LEFT_DRIVE_PIN
-#define motorRightOff			MOTOR_DRIVE_PORT &= ~MOTOR_RIGHT_DRIVE_PIN
-#define motorRightOn			MOTOR_DRIVE_PORT |= MOTOR_RIGHT_DRIVE_PIN
+#define motorLeftOff			(MOTOR_DRIVE_PORT &= ~MOTOR_LEFT_DRIVE_PIN)
+#define motorLeftOn				(MOTOR_DRIVE_PORT |= MOTOR_LEFT_DRIVE_PIN)
+#define motorRightOff			(MOTOR_DRIVE_PORT &= ~MOTOR_RIGHT_DRIVE_PIN)
+#define motorRightOn			(MOTOR_DRIVE_PORT |= MOTOR_RIGHT_DRIVE_PIN)
 
-#define motorEnableEncoders		ENCODER_ENABLE_PORT |= ENCODER_ENABLE_PIN
-#define motorDisableEncoders	ENCODER_ENABLE_PORT &= ~ENCODER_ENABLE_PIN
+#define motorEnableEncoders		(ENCODER_ENABLE_PORT |= ENCODER_ENABLE_PIN)
+#define motorDisableEncoders	(ENCODER_ENABLE_PORT &= ~ENCODER_ENABLE_PIN)
+
+#define encoderEnableInterrupts (EIMSK |= 0x03)
+#define encoderDisableInterrupts (EIMSK &= ~0x03)
 
 //Motor direction status values
 #define MOTOR_FWD				0x00
@@ -142,9 +150,9 @@ void motorInit(void)
 	EIFR
 	=	0xFF;
 	
-	//Enable interrupts
+	//Enable external interrupts
 	EIMSK
-	=	((INT1_IE<<0)&0x01)
+	=	((INT1_IE<<1)&0x01)
 	|	((INT0_IE<<0)&0x01);
 }
 
@@ -269,44 +277,31 @@ uint8_t moveRobot(float speed, float turnRatio)
 
 /*
 * Function:
-* int8_t getRightEncPulses(void)
+* int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses)
 *
 * Returns the number of pulses that have occurred since the last time the encoder was checked
 *
 * Inputs:
-* none
+* int8_t *leftPulses
+*	A pointer to a signed int where the number of left wheel pulses will be stored.
+* int8_t *rightPulses
+*	A pointer to a signed int where the number of right wheel pulses will be stored.
 *
 * Returns:
-* Returns the number of pulses that have occurred on the right wheel since this function was last
-* called
+* 0 on exit
+*
+* Improvement:
+* Perhaps this could return the amount of time has lapsed since the encoder pulses were last read?
 *
 */
-int8_t getLeftEncPulses(void)
+int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses)
 {
-	uint8_t pulses = leftPulseCount;
-	leftPulseCount = 0;
-	return pulses;
-}
-
-/*
-* Function:
-* int8_t getRightEncPulses(void)
-*
-* Returns the number of pulses that have occurred since the last time the encoder was checked
-*
-* Inputs:
-* none
-*
-* Returns:
-* Returns the number of pulses that have occurred on the left wheel since this function was last
-* called
-*
-*/
-int8_t getRightEncPulses(void)
-{
-	uint8_t pulses = rightPulseCount;
-	rightPulseCount = 0;
-	return pulses;
+	encoderDisableInterrupts;				//Disable external ints from encoders
+	*leftPulses = leftPulseCount;			//Read off left pulse count
+	*rightPulses = rightPulseCount;			//Read off right pulse count
+	leftPulseCount = rightPulseCount = 0;	//Clear the pulse counts
+	encoderEnableInterrupts;				//Re-enable the external interrupts.
+	return 0;
 }
 
 /*

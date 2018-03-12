@@ -30,5 +30,30 @@
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 
+/*
+* Function:
+* type capToRangeInt(type valueToCap, type minimumVal, type maximumVal)
+*
+* Will see if a value is within a given range. If it is outside the given range, then limit the
+* value to the given minimum or maximum value. Three different versions of this function operate on
+* different types of variable. (Signed and unsigned integers, and single precision floating point
+* numbers.
+*
+* Inputs:
+* valueToCap:
+*   The number we are checking to see if it is in range.
+* minimumVal:
+*   The minimumValue that we would like valueToCap to be
+* maximumVal:
+*   The maximum value we would like valueToCap to be.
+*
+* Returns:
+* If valueToCap was outside the desired range, then a range limited version of valueToCap is
+* returned, otherwise valueToCap is returned unmodified.
+*
+*/
+int32_t capToRangeInt(int32_t valueToCap, int32_t minimumVal, int32_t maximumVal);
+
+float capToRangeFlt(float valueToCap, float minimumVal, float maximumVal);
 
 #endif /* ROBOT_SETUP_H_ */

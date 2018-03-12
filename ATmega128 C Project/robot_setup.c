@@ -29,21 +29,19 @@
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
 * Function: 
-* [function declaration]
+* void robotSetup(void)
 *
-* [brief purpose of function]
+* Initialises all hardware on the robot by calling the initialisation routines from each driver
+* module.
 *
 * Inputs:
-* [input arguments and any relevant explanation]
+* none
 *
 * Returns:
-* [return values and any relevant explanation]
-*
-* Improvements:
-* [Ideas for improvements that are yet to be made](optional)
+* none
 *
 */
-void setup(void)
+void robotSetup(void)
 {
 	sei();
 }

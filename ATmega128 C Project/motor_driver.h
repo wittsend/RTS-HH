@@ -18,8 +18,7 @@
 * void motorRightDrive(int16_t speed);
 * void motorStop(void);
 * uint8_t moveRobot(float speed, float turnRatio);
-* int8_t getLeftEncPulses(void);
-* int8_t getRightEncPulses(void);
+* int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses);
 *
 */
 
@@ -123,34 +122,20 @@ uint8_t moveRobot(float speed, float turnRatio);
 
 /*
 * Function:
-* int8_t getRightEncPulses(void)
+* int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses)
 *
 * Returns the number of pulses that have occurred since the last time the encoder was checked
 *
 * Inputs:
-* none
+* int8_t *leftPulses
+*	A pointer to a signed int where the number of left wheel pulses will be stored.
+* int8_t *rightPulses
+*	A pointer to a signed int where the number of right wheel pulses will be stored.
 *
 * Returns:
-* Returns the number of pulses that have occurred on the right wheel since this function was last
-* called
+* 0 on exit
 *
 */
-int8_t getLeftEncPulses(void);
-
-/*
-* Function:
-* int8_t getRightEncPulses(void)
-*
-* Returns the number of pulses that have occurred since the last time the encoder was checked
-*
-* Inputs:
-* none
-*
-* Returns:
-* Returns the number of pulses that have occurred on the left wheel since this function was last
-* called
-*
-*/
-int8_t getRightEncPulses(void);
+int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses);
 
 #endif /* MOTOR_DRIVER_H_ */
