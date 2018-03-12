@@ -1,21 +1,23 @@
 /*
- * AssignmentRobotPosINCOMPLETE.c
- *
- * Created: 28/02/2018 3:11:17 PM
- * Author : jcollins
- * Description:
- *     Robot calculates its position with constant pwm.
- *     Written for Atmel Studio.
- * Limitations:
- *     This program assumes the robot starts at the origin
- *     and is pointing along the x axis.
- *
- * Add code to replace the ADD CODE comments.
- */
+* main.h
+*
+* Author : Matthew Witt (wittsend86@gmail.com)
+* Created: 12/03/2018 4:20:03 PM
+*
+* Project Repository: https://github.com/wittsend/RTS-HH
+*
+* 1 or 2 liner on the purpose of the file
+*
+* More Info:
+* Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
+* Relevant reference materials or datasheets if applicable
+*
+* Functions:
+* void funcName(void)
+*
+*/
 
-/*******************************************************************************
-* INCLUDES
-*******************************************************************************/
+//////////////[Includes]////////////////////////////////////////////////////////////////////////////
 #define F_CPU 8000000 // crystal frequency for delay.h
 #include <avr/io.h>
 #include <util/delay.h>
@@ -24,15 +26,13 @@
 #include <string.h>
 #include <math.h>
 
-/*******************************************************************************
-* DEFINES
-*******************************************************************************/
+//////////////[Defines]/////////////////////////////////////////////////////////////////////////////
 #define RIGHT_SPEED			512 // wheel speeds using 10-bit pwm
 #define LEFT_SPEED			512
-#define BUF_MAX				1000 // serial output buffer size
+
 #define LOOP_DELAY			200 // milliseconds
 
-#define USE_SERIAL_INTERRUPTS 1
+
 
 //Timer configuration:
 #define TIMER1_WGM			0x07	//Fast 10-bit PWM, set on TOP
@@ -65,11 +65,7 @@
 #define rightMotorOff		PORTB &= ~(1<<rightMotorDrivePin)
 #define rightMotorOn		PORTB |= (1<<rightMotorDrivePin)
 
-
-
-/*******************************************************************************
-* STRUCTURES
-*******************************************************************************/
+//////////////[Private Global Variables]///////////////////////////////////////////////////////////
 struct Position
 {
 	float x; // x and y position coordinates in metres
@@ -77,23 +73,14 @@ struct Position
 	float h; // heading angle in radians, anti-clockwise from the x-axis
 };
 
-/*******************************************************************************
-* FUNCTION PROTOTYPES
-*******************************************************************************/
+volatile unsigned int leftPulseCount, rightPulseCount; // wheel pulse counts
+
+
+//////////////[Functions]///////////////////////////////////////////////////////////////////////////
 void Setup(void); // ATmega128 initialisation for this program
 // calculate robot position from wheel pulse counts
 void Operate(struct Position *ppos);
 void OutputString(char* str); // put string in serial port 0 transmit buffer
-
-/*******************************************************************************
-* GLOBAL VARIABLES
-*******************************************************************************/
-volatile unsigned int leftPulseCount, rightPulseCount; // wheel pulse counts
-#if USE_SERIAL_INTERRUPTS == 1
-// serial port 0 transmit buffer
-volatile char buffer[BUF_MAX]; // buffer (queue) data
-volatile unsigned int head, tail, count; // buffer (queue) indexes
-#endif
 
 /*******************************************************************************
 * MAIN FUNCTION
@@ -117,7 +104,7 @@ int main (void)
 	OCR1B = RIGHT_SPEED;
 	while (1) // loop forever
 	{
-        _delay_ms(LOOP_DELAY); // wait for a constant time
+		_delay_ms(LOOP_DELAY); // wait for a constant time
 		Operate(&pos); // calculate position from wheel counters
 	}
 }
@@ -138,7 +125,7 @@ void Setup(void) // ATmega128 setup
 	// timer1 setup for pwm
 	// enable pwm outputs, use mode 7 and prescale = 256
 	// See defines above for timer settings
-    TCCR1A
+	TCCR1A
 	|=	(TIMER1_COM1A<<6)
 	|	(TIMER1_COM1B<<4)
 	|	(TIMER1_WGM & 0x03);
@@ -154,14 +141,14 @@ void Setup(void) // ATmega128 setup
 	UCSR0C = 0b00000110; // 8 data bits, no parity, 1 stop
 	UBRR0H = 0; // 9600 bps = 51, 19200 bps = 25, 38400 bps = 12
 	UBRR0L = 12;
-    // wait 500ms for the electronic hardware to settle
+	// wait 500ms for the electronic hardware to settle
 	_delay_ms(500);
 	// enable external interrupts for the wheel pulses (INT0, INT1)
 	// use rising edges of wheel pulses
 	EICRA = 0b00001111;
 	EIFR = 0b00000011; // clear interrupt flags
 	EIMSK = 0b00000011; // enable INT0, INT1
-	#if USE_SERIAL_INTERRUPTS == 1
+	#if UART_USE_INTS == 1
 	// initialise serial output buffer
 	head = 0;
 	tail = 0;
@@ -177,7 +164,7 @@ void Operate(struct Position *ppos) // calculate the robot position
 	float r = 0, dx = 0, dy = 0;
 	
 	
-    static int leftTotal = 0, rightTotal = 0, timeTotal = 0;
+	static int leftTotal = 0, rightTotal = 0, timeTotal = 0;
 	char str[100]; // serial output string
 	// get the pulse counts
 	cli();
@@ -187,12 +174,12 @@ void Operate(struct Position *ppos) // calculate the robot position
 	rightPulseCount = 0;
 	sei();
 	// increment the time counter
-    timeTotal++;
+	timeTotal++;
 	// if there were any pulses
-    // ADD CODE
+	// ADD CODE
 	if (leftCount || rightCount)
 	{
-        // calculate the new position
+		// calculate the new position
 		
 		//Calculate the change in heading
 		dTheta = (float)(rightCount - leftCount)*PULSE_DIST/TRACK_WIDTH;
@@ -204,15 +191,15 @@ void Operate(struct Position *ppos) // calculate the robot position
 			r = (TRACK_WIDTH/2*((float)rightCount + (float)leftCount)*PULSE_DIST)
 			/(((float)rightCount - (float)leftCount)*PULSE_DIST);
 			dx = r*(sin(ppos->h + dTheta) - sin(ppos->h));
-			dy = r*(cos(dTheta) - cos(dTheta - ppos->h));	
-		} else {
+			dy = r*(cos(dTheta) - cos(dTheta - ppos->h));
+			} else {
 			dx = PULSE_DIST*rightCount*cos(ppos->h);
 			dy = PULSE_DIST*rightCount*sin(ppos->h);
 		}
 		
-        // add pulses to the totals
-        leftTotal += leftCount;
-        rightTotal += rightCount;
+		// add pulses to the totals
+		leftTotal += leftCount;
+		rightTotal += rightCount;
 		
 		//Update position structure.
 		ppos->h += dTheta;
@@ -221,8 +208,8 @@ void Operate(struct Position *ppos) // calculate the robot position
 		
 		// display the new position (convert heading to degrees)
 		sprintf(str, "POS,%6.3f,%6.3f,%6.1f,%1d,%1d,%4d,%4d,%4d\r\n",
-			ppos->x, ppos->y, ppos->h * 180. / M_PI,
-			leftCount, rightCount, leftTotal, rightTotal, timeTotal);
+		ppos->x, ppos->y, ppos->h * 180. / M_PI,
+		leftCount, rightCount, leftTotal, rightTotal, timeTotal);
 		OutputString(str);
 	}
 }
@@ -230,46 +217,7 @@ void Operate(struct Position *ppos) // calculate the robot position
 /*******************************************************************************
 * OutputString FUNCTIONS
 *******************************************************************************/
-#if USE_SERIAL_INTERRUPTS == 1
-// transmit serial string USING INTERRUPTS
-void OutputString(char* str)
-{
-	int length = strlen(str);
-	UCSR0B &= ~(1 << UDRIE0); // disable serial port 0 UDRE interrupt
-	// check for too many chars
-	if (count + length >= BUF_MAX)
-	{
-		UCSR0B |= (1 << UDRIE0); // enable serial port 0 UDRE interrupt
-		return;
-	}
-	// write the characters into the buffer
-	for (int n = 0; n < length; n++)
-	{
-		buffer[tail] = str[n];
-		tail++;
-		if (tail >= BUF_MAX)
-		{
-			tail = 0;
-		}
-	}
-	count += length;
-	UCSR0B |= (1 << UDRIE0); // enable serial port 0 UDRE interrupt
-}
-#else
-// transmit serial string NOT USING INTERRUPTS
-void OutputString(char* str)
-{
-	int length = strlen(str);
-	// for each character in the string
-	for (int n = 0; n < length; n++)
-	{
-		// wait while the serial port is busy
-		while (!(UCSR0A & (1 << UDRE0)));
-		// transmit the character
-		UDR0 = str[n];
-	}
-}
-#endif
+
 
 /*******************************************************************************
 * INTERRUPT FUNCTIONS
@@ -277,37 +225,16 @@ void OutputString(char* str)
 ISR(INT0_vect) // left wheel pulse counter
 {
 	if(leftMotorDir)
-		leftPulseCount--;
+	leftPulseCount--;
 	else
-		leftPulseCount++;
+	leftPulseCount++;
 }
 
 ISR(INT1_vect) // right wheel pulse counter
 {
 	if(rightMotorDir)
-		rightPulseCount--;
+	rightPulseCount--;
 	else
-		rightPulseCount++;
+	rightPulseCount++;
 }
-
-#if USE_SERIAL_INTERRUPTS == 1
-ISR(USART0_UDRE_vect) // serial DRE (transmit) interrupt
-{
-	if (count > 0) // if there are more characters
-	{
-		UDR0 = buffer[head]; // transmit the next character
-		// adjust the buffer variables
-		head++;
-		if (head > BUF_MAX)
-		{
-			head = 0;
-		}
-		count--;
-	}
-	if (count == 0) // if there are no more characters
-	{
-		UCSR0B &= ~(1 << UDRIE0); // then disable serial port 0 UDRE interrupt
-	}
-}
-#endif
 

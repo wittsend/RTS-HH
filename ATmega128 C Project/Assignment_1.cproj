@@ -138,7 +138,22 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="assignment0_2.c">
+    <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="motor_driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="motor_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timer_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="uart_driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="uart_driver.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
