@@ -29,6 +29,22 @@
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
+/*
+* Function:
+* void robotSetup(void)
+*
+* Initialises all hardware on the robot by calling the initialisation routines from each driver
+* module.
+*
+* Inputs:
+* none
+*
+* Returns:
+* none
+*
+*/
+void robotSetup(void);
+
 
 /*
 * Function:

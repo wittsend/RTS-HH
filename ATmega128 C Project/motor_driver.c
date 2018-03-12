@@ -24,6 +24,7 @@
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
 #include "robot_setup.h"
+#include <avr/interrupt.h>
 #include <stdlib.h>							//abs()
 #include "motor_driver.h"
 

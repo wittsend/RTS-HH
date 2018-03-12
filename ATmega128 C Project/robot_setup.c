@@ -20,6 +20,10 @@
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
 #include "robot_setup.h"
 
+#include "motor_driver.h"
+#include "timer.h"
+#include "uart_driver.h"
+
 #include <avr/interrupt.h>
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
@@ -43,7 +47,13 @@
 */
 void robotSetup(void)
 {
-	sei();
+	timer3Init();		//Initialise the system timer	
+	motorInit();		//Initialise the motor and encoder hardware
+	uart0Init();		//Initialise serial comms
+	
+	delay_ms(2500);		//Prevents robot from running away immediately
+	
+	sei();				//Globally enable interrupts.
 }
 
 /*
