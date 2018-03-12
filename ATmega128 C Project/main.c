@@ -19,7 +19,7 @@
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
 #define F_CPU 8000000 // crystal frequency for delay.h
-#include <avr/io.h>
+#include "robot_setup.h"
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
@@ -37,8 +37,7 @@
 //Robot dimensions
 #define TRACK_WIDTH			0.10640	//Track width of robots wheels (m)
 #define TRACK_WIDTH_P		14.9564	//Track width in pulses
-#define PPR					24.		//Pulses per revolution
-#define PULSE_DIST			0.007114//Distance travelled in one pulse (m)
+
 
 
 

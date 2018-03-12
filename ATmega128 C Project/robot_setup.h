@@ -1,12 +1,12 @@
 /*
-* motor_driver.h
+* robot_setup.h
 *
 * Author : Matthew Witt (wittsend86@gmail.com)
-* Created: 12/03/2018 6:44:38 PM
+* Created: 12/03/2018 9:00:28 PM
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* Header file for the Hedgehogs motor driver module
+* 1 or 2 liner on the purpose of the file
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -17,18 +17,18 @@
 *
 */
 
-#ifndef MOTOR_DRIVER_H_
-#define MOTOR_DRIVER_H_
+#ifndef ROBOT_SETUP_H_
+#define ROBOT_SETUP_H_
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
+#include <avr/io.h>		//Hardware specific register defines
+#include <stdint.h>		//Allows for specific integer variable sizes
 
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
-#define MOTOR_PPR				24.			//Pulses per revolution
-#define MOTOR_PULSE_DIST		0.007114	//Distance travelled in one pulse (m)
 
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 
 
-#endif /* MOTOR_DRIVER_H_ */
+#endif /* ROBOT_SETUP_H_ */
