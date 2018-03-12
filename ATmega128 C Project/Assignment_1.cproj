@@ -153,9 +153,6 @@
     <Compile Include="timer.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="timer_driver.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="uart_driver.c">
       <SubType>compile</SubType>
     </Compile>

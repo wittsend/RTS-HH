@@ -27,8 +27,6 @@
 #include <math.h>
 
 //////////////[Defines]/////////////////////////////////////////////////////////////////////////////
-#define RIGHT_SPEED			512 // wheel speeds using 10-bit pwm
-#define LEFT_SPEED			512
 
 #define LOOP_DELAY			200 // milliseconds
 
@@ -39,7 +37,7 @@
 //Robot dimensions
 #define TRACK_WIDTH			0.10640	//Track width of robots wheels (m)
 #define TRACK_WIDTH_P		14.9564	//Track width in pulses
-#define PPR					24		//Pulses per revolution
+#define PPR					24.		//Pulses per revolution
 #define PULSE_DIST			0.007114//Distance travelled in one pulse (m)
 
 
@@ -52,7 +50,7 @@ struct Position
 	float h; // heading angle in radians, anti-clockwise from the x-axis
 };
 
-volatile unsigned int leftPulseCount, rightPulseCount; // wheel pulse counts
+
 
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
@@ -92,13 +90,7 @@ int main (void)
 *******************************************************************************/
 void Setup(void) // ATmega128 setup
 {
-	// digital input/output
-	DDRA = 0b11000000; // enable motor direction outputs, bits 6 and 7
-	PORTA = 0b00000000; // both motors forward
-	DDRB = 0b01100000; // enable motor outputs, bits 5 and 6
-	PORTB = 0b00000000; // both motors off
-	DDRC = (1 << 3); // enable the wheel pulse generator electronics, bit 3
-	PORTC = (1 << 3);
+
 	
 
 	
@@ -107,9 +99,7 @@ void Setup(void) // ATmega128 setup
 	_delay_ms(500);
 	// enable external interrupts for the wheel pulses (INT0, INT1)
 	// use rising edges of wheel pulses
-	EICRA = 0b00001111;
-	EIFR = 0b00000011; // clear interrupt flags
-	EIMSK = 0b00000011; // enable INT0, INT1
+
 
 	sei(); // enable interrupts last
 }
@@ -170,28 +160,3 @@ void Operate(struct Position *ppos) // calculate the robot position
 		OutputString(str);
 	}
 }
-
-/*******************************************************************************
-* OutputString FUNCTIONS
-*******************************************************************************/
-
-
-/*******************************************************************************
-* INTERRUPT FUNCTIONS
-*******************************************************************************/
-ISR(INT0_vect) // left wheel pulse counter
-{
-	if(motorLeftDir)
-	leftPulseCount--;
-	else
-	leftPulseCount++;
-}
-
-ISR(INT1_vect) // right wheel pulse counter
-{
-	if(motorRightDir)
-	rightPulseCount--;
-	else
-	rightPulseCount++;
-}
-
