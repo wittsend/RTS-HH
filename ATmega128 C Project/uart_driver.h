@@ -13,7 +13,8 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void uart0Init(void);
+* void OutputString(char* str);
 *
 */
 
@@ -29,6 +30,7 @@
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
+void uart0Init(void);
 void OutputString(char* str);
 
 #endif /* UART_DRIVER_H_ */

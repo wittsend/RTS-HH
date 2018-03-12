@@ -13,15 +13,28 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void uart0Init(void);
+* void OutputString(char* str);
 *
 */
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
+#include <avr/io.h>
 #include "uart_driver.h"
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
-
+#define UART0_RXCIE		0x00		//Receive complete interrupt enable
+#define UART0_TXCIE		0x00		//Transmit complete interrupt enable
+#define UART0_UDRIE		UART_USE_INTS//Data register empty interrupt enable
+#define UART0_RXEN		0x01		//Receive enable setting
+#define UART0_TXEN		0x01		//Transmit enable setting
+#define UART0_UCSZ		0x03		//Character size (8-Bit)
+#define UART0_UMSEL		0x00		//Mode select (Async)
+#define UART0_UPM		0x00		//Parity mode (None)
+#define UART0_USBS		0x00		//Stop bit select (1-bit)
+#define UART0_UCPOL		0x00		//Clock Polarity (NA)
+// 9600 bps = 51, 19200 bps = 25, 38400 bps = 12
+#define UART0_UBRR		12			//Baud rate setting (38400bps)
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 #if UART_USE_INTS == 1
@@ -31,8 +44,49 @@ volatile unsigned int head, tail, count;	//buffer (queue) indexes
 #endif
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
-#if UART_USE_INTS == 1
+/*
+* Function:
+* void uart0Init(void)
+*
+* Initialises the UART interface for communication with a PC
+*
+* Inputs:
+* none
+*
+* Returns:
+* none
+*
+*/
+void uart0Init(void)
+{
+	//Load the UART registers with the values defined above
+	UCSR0B 
+	=	((UART0_RXCIE<<7)&0x01)
+	|	((UART0_TXCIE<<6)&0x01)
+	|	((UART0_UDRIE<<5)&0x01)
+	|	((UART0_RXEN<<4)&0x01)
+	|	((UART0_TXEN<<3)&0x01)
+	|	((UART0_UCSZ<<2)&0x04);
+	
+	UCSR0C
+	=	((UART0_UMSEL<<6)&0x01)
+	|	((UART0_UPM<<4)&0x03)
+	|	((UART0_USBS<<3)&0x01)
+	|	((UART0_UCSZ<<1)&0x03)
+	|	((UART0_UCPOL<<0)&0x01);
+	
+	UBRR0H = (UART0_UBRR & 0xFF00); 
+	UBRR0L = (UART0_UBRR & 0x00FF);
+	
+	#if UART_USE_INTS == 1
+	//Initialise serial output buffer
+	head = 0;
+	tail = 0;
+	count = 0;
+	#endif
+}
 
+#if UART_USE_INTS == 1
 /*
 * Function:
 * void OutputString(char* str)

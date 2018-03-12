@@ -59,7 +59,6 @@ volatile unsigned int leftPulseCount, rightPulseCount; // wheel pulse counts
 void Setup(void); // ATmega128 initialisation for this program
 // calculate robot position from wheel pulse counts
 void Operate(struct Position *ppos);
-void OutputString(char* str); // put string in serial port 0 transmit buffer
 
 /*******************************************************************************
 * MAIN FUNCTION
@@ -103,12 +102,7 @@ void Setup(void) // ATmega128 setup
 	
 
 	
-	// serial output
-	UCSR0A = 0; // not used
-	UCSR0B = 0b00011000; // enable receive and transmit
-	UCSR0C = 0b00000110; // 8 data bits, no parity, 1 stop
-	UBRR0H = 0; // 9600 bps = 51, 19200 bps = 25, 38400 bps = 12
-	UBRR0L = 12;
+
 	// wait 500ms for the electronic hardware to settle
 	_delay_ms(500);
 	// enable external interrupts for the wheel pulses (INT0, INT1)
@@ -116,12 +110,7 @@ void Setup(void) // ATmega128 setup
 	EICRA = 0b00001111;
 	EIFR = 0b00000011; // clear interrupt flags
 	EIMSK = 0b00000011; // enable INT0, INT1
-	#if UART_USE_INTS == 1
-	// initialise serial output buffer
-	head = 0;
-	tail = 0;
-	count = 0;
-	#endif
+
 	sei(); // enable interrupts last
 }
 
