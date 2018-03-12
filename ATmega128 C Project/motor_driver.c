@@ -75,7 +75,7 @@
 #define MOTOR_REV				0x01
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
-volatile unsigned int leftPulseCount, rightPulseCount; // wheel pulse counts
+volatile int8_t leftPulseCount, rightPulseCount; // wheel pulse counts
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
@@ -148,7 +148,22 @@ void motorInit(void)
 	|	((INT0_IE<<0)&0x01);
 }
 
-void motorLeftDrive(signed char speed)
+/*
+* Function:
+* void motorLeftDrive(int16_t speed)
+*
+* Drives the left motor at the given speed and direction
+*
+* Inputs:
+* int16_t speed:
+*	An integer between -1023 and 1023 that indicates the PWM speed to drive the motor at (1023 is
+*	maximum). A negative number drives the motor in reverse.
+*
+* Returns:
+* none
+*
+*/
+void motorLeftDrive(int16_t speed)
 {
 	speed = capToRangeInt(speed, -1023, 1023);	//Make sure speed is in range
 	motorLeftSpeed = abs(speed);
@@ -158,7 +173,22 @@ void motorLeftDrive(signed char speed)
 		motorLeftRev;
 }
 
-void motorRightDrive(signed char speed)
+/*
+* Function:
+* void motorRightDrive(int16_t speed)
+*
+* Drives the right motor at the given speed and direction
+*
+* Inputs:
+* int16_t speed:
+*	An integer between -1023 and 1023 that indicates the PWM speed to drive the motor at (1023 is
+*	maximum). A negative number drives the motor in reverse.
+*
+* Returns:
+* none
+*
+*/
+void motorRightDrive(int16_t speed)
 {
 	speed = capToRangeInt(speed, -1023, 1023);	//Make sure speed is in range
 	motorRightSpeed = abs(speed);
@@ -168,40 +198,115 @@ void motorRightDrive(signed char speed)
 		motorRightRev;
 }
 
+/*
+* Function:
+* motorStop(void)
+*
+* Stops all motors
+*
+* Inputs:
+* none
+*
+* Returns:
+* none
+*
+*/
 void motorStop(void)
 {
 	motorRightDrive(0);
 	motorLeftDrive(0);
 }
 
+/*
+* Function:
+* uint8_t moveRobot(float speed, float turnRatio)
+*
+* A function to move the robot in a given direction
+*
+* Inputs:
+* float speed:
+*	A floating point value between -1023 and 1023 that indicates how fast the motors should be
+*	driven. Negative numbers will attempt to drive the robot backwards.
+* float turnRatio:
+*   The ratio of rotation to be applied to the motion (-1023 to 1023). if turnRatio is 0, then
+*   robot just drives straight at 'speed'. -1023 will have robot rotating CCW on the spot at
+*   'speed'. 512 would be half and half driving forward with a CW rotational element applied. If
+*   both speed and turnRatio are negative, then robot will rotate in CW (-1*-1) = 1
+*
+* Returns:
+* Returns 0 on exit
+*
+*/
 uint8_t moveRobot(float speed, float turnRatio)
 {
-	int8_t rightMotorSpeed, leftMotorSpeed;
-	
 	//If speed is set to 0, then save processor cycles
 	if(speed == 0.0)
 	{
 		motorStop();
 		return 0;
 	}
+
+	int8_t rightMotorSpeed, leftMotorSpeed;
 	
 	//Make sure parameters are in range and correct if necessary
-	speed = capToRangeFlt(speed, -100, 100);
-	turnRatio = capToRangeFlt(turnRatio, -100, 100);
+	speed = capToRangeFlt(speed, -1023, 1023);
+	turnRatio = capToRangeFlt(turnRatio, -1023, 1023);
 	
-	//Calculate speed ratios
-	float rotationalSpeed = speed*(turnRatio/100.0);
-	float straightSpeed = abs(speed) - (abs(rotationalSpeed));
+	//Calculate speed ratios. Positive turn ratio will see robot veer to the right
+	float rotationalSpeed = speed*(turnRatio/1023.0);
+	float straightSpeed = speed - (abs(rotationalSpeed));
 	
 	//Calculate individual motor speeds
-	rightMotorSpeed		= -rotationalSpeed - straightSpeed;
-	leftMotorSpeed		= rotationalSpeed - straightSpeed ;
+	rightMotorSpeed		= straightSpeed - rotationalSpeed;
+	leftMotorSpeed		= straightSpeed + rotationalSpeed;
 	
 	//Apply speeds and directions to motors
 	motorRightDrive(rightMotorSpeed);
 	motorLeftDrive(leftMotorSpeed);
 	
 	return 0;
+}
+
+/*
+* Function:
+* int8_t getRightEncPulses(void)
+*
+* Returns the number of pulses that have occurred since the last time the encoder was checked
+*
+* Inputs:
+* none
+*
+* Returns:
+* Returns the number of pulses that have occurred on the right wheel since this function was last
+* called
+*
+*/
+int8_t getLeftEncPulses(void)
+{
+	uint8_t pulses = leftPulseCount;
+	leftPulseCount = 0;
+	return pulses;
+}
+
+/*
+* Function:
+* int8_t getRightEncPulses(void)
+*
+* Returns the number of pulses that have occurred since the last time the encoder was checked
+*
+* Inputs:
+* none
+*
+* Returns:
+* Returns the number of pulses that have occurred on the left wheel since this function was last
+* called
+*
+*/
+int8_t getRightEncPulses(void)
+{
+	uint8_t pulses = rightPulseCount;
+	rightPulseCount = 0;
+	return pulses;
 }
 
 /*
