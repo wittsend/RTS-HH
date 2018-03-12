@@ -34,11 +34,7 @@
 
 
 
-//Timer configuration:
-#define TIMER1_WGM			0x07	//Fast 10-bit PWM, set on TOP
-#define TIMER1_COM1A		0x02	//Clear on compare match
-#define TIMER1_COM1B		0x02	//Clear on compare match
-#define TIMER1_CS			0x04	//Clock select clk/256
+
 
 //Robot dimensions
 #define TRACK_WIDTH			0.10640	//Track width of robots wheels (m)
@@ -46,24 +42,7 @@
 #define PPR					24		//Pulses per revolution
 #define PULSE_DIST			0.007114//Distance travelled in one pulse (m)
 
-//Motor control macros:
-#define leftMotorDrivePin	5		//PORTB
-#define leftMotorDirPin		6		//PORTA
-#define rightMotorDrivePin	6		//PORTB
-#define rightMotorDirPin	7		//PORTA
 
-#define leftMotorFwd		PORTA &= ~(1<<leftMotorDirPin)
-#define leftMotorRev		PORTA |= (1<<leftMotorDirPin)
-#define rightMotorFwd		PORTA &= ~(1<<rightMotorDirPin)
-#define rightMotorRev		PORTA |= (1<<rightMotorDirPin)
-
-#define leftMotorDir		PORTA & (1<<leftMotorDirPin)
-#define rightMotorDir		PORTA & (1<<rightMotorDirPin)
-
-#define leftMotorOff		PORTB &= ~(1<<leftMotorDrivePin)
-#define leftMotorOn			PORTB |= (1<<leftMotorDrivePin)
-#define rightMotorOff		PORTB &= ~(1<<rightMotorDrivePin)
-#define rightMotorOn		PORTB |= (1<<rightMotorDrivePin)
 
 //////////////[Private Global Variables]///////////////////////////////////////////////////////////
 struct Position
@@ -122,19 +101,8 @@ void Setup(void) // ATmega128 setup
 	DDRC = (1 << 3); // enable the wheel pulse generator electronics, bit 3
 	PORTC = (1 << 3);
 	
-	// timer1 setup for pwm
-	// enable pwm outputs, use mode 7 and prescale = 256
-	// See defines above for timer settings
-	TCCR1A
-	|=	(TIMER1_COM1A<<6)
-	|	(TIMER1_COM1B<<4)
-	|	(TIMER1_WGM & 0x03);
-	TCCR1B
-	|=	((TIMER1_WGM & 0x0C)<<3)
-	|	(TIMER1_CS);
+
 	
-	OCR1A = 0; // left motor off
-	OCR1B = 0; // right motor off
 	// serial output
 	UCSR0A = 0; // not used
 	UCSR0B = 0b00011000; // enable receive and transmit
@@ -224,7 +192,7 @@ void Operate(struct Position *ppos) // calculate the robot position
 *******************************************************************************/
 ISR(INT0_vect) // left wheel pulse counter
 {
-	if(leftMotorDir)
+	if(motorLeftDir)
 	leftPulseCount--;
 	else
 	leftPulseCount++;
@@ -232,7 +200,7 @@ ISR(INT0_vect) // left wheel pulse counter
 
 ISR(INT1_vect) // right wheel pulse counter
 {
-	if(rightMotorDir)
+	if(motorRightDir)
 	rightPulseCount--;
 	else
 	rightPulseCount++;
