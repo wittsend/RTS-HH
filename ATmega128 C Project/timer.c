@@ -64,6 +64,7 @@ volatile uint16_t delaymsCounter = 0;		//Used by delay_ms()
 */
 void timer3Init(void)
 {
+	//See the settings for timer 3 in the defines above
 	TCCR3A
 	=	((TIMER3_COMPA & 0x03) << 6)
 	|	((TIMER3_COMPB & 0x03) << 4)
