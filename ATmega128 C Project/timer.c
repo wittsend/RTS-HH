@@ -34,7 +34,7 @@
 #define TIMER3_FOCA		0x00				//Not used
 #define TIMER3_FOCB		0x00				//Not used
 #define TIMER3_WGM		0x02				//Mode 2 CTC
-#define TIMER3_CLKSEL	0x04				//div by 64
+#define TIMER3_CLKSEL	0x03				//div by 64
 #define TIMER3_OCR0A	125					//Compare every 125 counts (1ms)
 #define TIMER3_OCR0B	0x00				//Not used
 #define TIMER3_OCAIE	0x01				//Output compare interrupt enabled
@@ -76,10 +76,9 @@ void timer3Init(void)
 	|	((TIMER3_WGM & 0x04) << 1)
 	|	((TIMER3_CLKSEL & 0x07) << 0);
 	
-	TIMSK
-	=	((TIMER3_OCBIE & 0x01) << 2)
-	|	((TIMER3_OCAIE & 0x01) << 1)
-	|	((TIMER3_OVIE & 0x01) << 0);
+	ETIMSK
+	=	((TIMER3_OCBIE & 0x01) << 3)
+	|	((TIMER3_OCAIE & 0x01) << 4);
 
 	OCR3A = TIMER3_OCR0A;
 	OCR3B = TIMER3_OCR0B;

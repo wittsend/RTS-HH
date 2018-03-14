@@ -29,7 +29,22 @@
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
-RobotGlobalData sys;
+//Initialise the robot's global data structure
+RobotGlobalData sys = 
+{
+	//Initial position data
+	.pos =
+	{
+		.x				= 0,
+		.y				= 0,
+		.heading		= 0,
+		.leftPulses		= 0,
+		.rightPulses	= 0
+	},
+	
+	//System time stamp.
+	.timeStamp		= 0
+};
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
@@ -51,10 +66,12 @@ void robotSetup(void)
 	timer3Init();		//Initialise the system timer	
 	motorInit();		//Initialise the motor and encoder hardware
 	uart0Init();		//Initialise serial comms
-	
-	delay_ms(2500);		//Prevents robot from running away immediately
-	
+
 	sei();				//Globally enable interrupts.
+	
+	//delay_ms(2500);		//Prevents robot from running away immediately
+	
+
 }
 
 /*

@@ -25,8 +25,23 @@
 #include <stdint.h>		//Allows for specific integer variable sizes
 
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
+
+//A structure that holds information about the position and orientation of the robot.
+typedef struct PositionData
+{
+	float x;				//X position of the robot (m)
+	float y;				//Y position of the robot (m)
+	float heading;			//Heading of the robot (Radians?)
+	int8_t leftPulses;		//Number of pulses from left wheel
+	int8_t rightPulses;		//Number of pulses from right wheel
+	//uint8_t pollEnabled;	//Whether or not to poll the navigation data
+	//uint8_t pollInterval;	//The interval at which to poll
+} PositionData;
+
+//The root structure of the global data tree. 
 typedef struct RobotGlobalData
 {
+	PositionData pos;
 	uint32_t timeStamp;
 } RobotGlobalData;
 

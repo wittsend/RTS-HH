@@ -13,11 +13,14 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void updateNavigationData(RobotGlobalData *sys);
 *
 */
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
+#include "robot_setup.h"
+#include "timer.h"			//For getting the system time stamp.
+#include "motor_driver.h"	//For reading from the wheel encoders
 #include "navigation.h"
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
@@ -25,19 +28,39 @@
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
+
+void calcPosition(RobotGlobalData *sys)
+{
+	
+}
+
 /*
 * Function: 
-* [function declaration]
+* void updateNavigationData(RobotGlobalData *sys)
 *
-* [brief purpose of function]
+* Retrieves navigation and time data from the robot's sensors and timer
 *
 * Inputs:
-* [input arguments and any relevant explanation]
+* RobotGlobalData *sys:
+*	A pointer to the global data structure
 *
 * Returns:
-* [return values and any relevant explanation]
-*
-* Improvements:
-* [Ideas for improvements that are yet to be made](optional)
+* none
 *
 */
+void updateNavigationData(RobotGlobalData *sys)
+{
+	//Update the system time stamp from the timer driver module. This provides a level of
+	//abstraction from the hardware drivers.
+	sys->timeStamp = systemTimestamp;
+	
+	//Get the wheel encoder pulse counts from the motor driver module
+	getEncPulses(&sys->pos.leftPulses, &sys->pos.rightPulses);
+	
+	//If movement has occurred, re-calculate position
+	if(sys->pos.leftPulses || sys->pos.rightPulses)
+	{
+		return;
+		//Calculate position of robot.
+	}
+}

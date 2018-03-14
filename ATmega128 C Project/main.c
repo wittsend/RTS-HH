@@ -21,36 +21,27 @@
 #include "robot_setup.h"
 #include <avr/interrupt.h>
 #include <stdio.h>
-#include <string.h>
+
 #include <math.h>
 
-#include "timer.h"
-#include "uart_driver.h"
+#include "navigation.h"
 
 //////////////[Defines]/////////////////////////////////////////////////////////////////////////////
-#define LOOP_DELAY			200 // milliseconds
 
 //Robot dimensions
 #define TRACK_WIDTH			0.10640	//Track width of robots wheels (m)
 #define TRACK_WIDTH_P		14.9564	//Track width in pulses
 
 //////////////[Private Global Variables]///////////////////////////////////////////////////////////
-struct Position
-{
-	float x; // x and y position coordinates in metres
-	float y;
-	float h; // heading angle in radians, anti-clockwise from the x-axis
-};
+extern RobotGlobalData sys;
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
-
-void Operate(struct Position *ppos);
 
 int main (void)
 {
 	//char str[40]; // serial output string
 	//struct Position pos; // current position from CalcPosition
-	//robotSetup(); // initialise ATmega128
+	robotSetup(); // initialise ATmega128
 	//// set initial robot location at origin
 	//pos.x = 0.;
 	//pos.y = 0.;
@@ -65,14 +56,15 @@ int main (void)
 	////OCR1B = RIGHT_SPEED;
 	while (1) // loop forever
 	{
-		delay_ms(LOOP_DELAY); // wait for a constant time
+		
 		//Operate(&pos); // calculate position from wheel counters
+/		updateNavigationData(&sys);
 	}
 }
 
 
-void Operate(struct Position *ppos) // calculate the robot position
-{
+//void Operate(struct Position *ppos) // calculate the robot position
+//{
 	//int leftCount, rightCount;		// number of wheel pulses
 	//float dTheta = 0;				//delta angle of each wheel in radians
 	//float r = 0, dx = 0, dy = 0;
@@ -126,4 +118,4 @@ void Operate(struct Position *ppos) // calculate the robot position
 		//leftCount, rightCount, leftTotal, rightTotal, timeTotal);
 		//OutputString(str);
 	//}
-}
+//}

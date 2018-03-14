@@ -19,6 +19,7 @@
 * void motorStop(void);
 * uint8_t moveRobot(float speed, float turnRatio);
 * int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses);
+* float getDistTravelled(int8_t pulses);
 *
 */
 
@@ -144,8 +145,8 @@ void motorInit(void)
 	////Encoder interrupt setup////
 	//Set the interrupt sense modes
 	EICRA 
-	=	((INT1_ISC<<0)&0x03)
-	|	((INT0_ISC<<0)&0x03);
+	=	((INT1_ISC&0x03)<<2)
+	|	((INT0_ISC&0x03)<<0);
 	
 	//Clear interrupt flags
 	EIFR
@@ -300,9 +301,30 @@ int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses)
 	encoderDisableInterrupts;				//Disable external ints from encoders
 	*leftPulses = leftPulseCount;			//Read off left pulse count
 	*rightPulses = rightPulseCount;			//Read off right pulse count
-	leftPulseCount = rightPulseCount = 0;	//Clear the pulse counts
+	leftPulseCount = 0;						//Clear the pulse counts
+	rightPulseCount = 0;					//Clear the pulse counts
 	encoderEnableInterrupts;				//Re-enable the external interrupts.
 	return 0;
+}
+
+/*
+* Function:
+* float getDistTravelled(int8_t pulses)
+*
+* Will return the distance a wheel has traveled based on how many pulses have occurred. Distance
+* constants are set in the defines in the motor_driver module
+*
+* Inputs:
+* int8_t pulses
+*	How many pulses to calculate the distance for
+*
+* Returns:
+* A float containing the distance in metres
+*
+*/
+float getDistTravelled(int8_t pulses)
+{
+	return pulses*MOTOR_PULSE_DIST;
 }
 
 /*

@@ -13,7 +13,7 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void updateNavigationData(RobotGlobalData *sys);
 *
 */
 
@@ -27,6 +27,20 @@
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
-
+/*
+* Function:
+* void updateNavigationData(RobotGlobalData *sys)
+*
+* Retrieves navigation and time data from the robot's sensors and timer
+*
+* Inputs:
+* RobotGlobalData *sys:
+*	A pointer to the global data structure
+*
+* Returns:
+* none
+*
+*/
+void updateNavigationData(RobotGlobalData *sys);
 
 #endif /* NAVIGATION_H_ */
