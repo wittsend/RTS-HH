@@ -29,19 +29,19 @@
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <EraseKey />
     <AsfFrameworkConfig>
-      <framework-data xmlns="">
-        <options />
-        <configurations />
-        <files />
-        <documentation help="" />
-        <offline-documentation help="" />
-        <dependencies>
-          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.35.1" />
-        </dependencies>
-      </framework-data>
+      <framework-data>
+  <options />
+  <configurations />
+  <files />
+  <documentation help="" />
+  <offline-documentation help="" />
+  <dependencies>
+    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.26.0" />
+  </dependencies>
+</framework-data>
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
-    <avrtoolserialnumber>J41800010031</avrtoolserialnumber>
+    <avrtoolserialnumber>J41800006536</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0x1E9702</avrdeviceexpectedsignature>
     <com_atmel_avrdbg_tool_atmelice>
       <ToolOptions>
@@ -51,7 +51,7 @@
         <InterfaceName>JTAG</InterfaceName>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
-      <ToolNumber>J41800010031</ToolNumber>
+      <ToolNumber>J41800006536</ToolNumber>
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
     <avrtoolinterface>JTAG</avrtoolinterface>
@@ -141,10 +141,22 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="motion.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="motion.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="motor_driver.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="motor_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="navigation.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="navigation.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="robot_setup.c">

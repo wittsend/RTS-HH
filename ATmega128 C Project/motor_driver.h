@@ -19,6 +19,7 @@
 * void motorStop(void);
 * uint8_t moveRobot(float speed, float turnRatio);
 * int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses);
+* float nfGetDistTravelled(int8_t pulses);
 *
 */
 
@@ -29,7 +30,6 @@
 
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
 #define MOTOR_PPR				24.			//Pulses per revolution
-#define MOTOR_PULSE_DIST		0.007114	//Distance travelled in one pulse (m)
 
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
 
