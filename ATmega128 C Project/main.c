@@ -13,45 +13,35 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* int main(void)
 *
 */
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
 #include "robot_setup.h"
-#include <avr/interrupt.h>
-#include <stdio.h>		//sprintf
-
-
-
 #include "navigation.h"
 
 //////////////[Defines]/////////////////////////////////////////////////////////////////////////////
-
-
 
 //////////////[Private Global Variables]///////////////////////////////////////////////////////////
 extern RobotGlobalData sys;
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
-
-int main (void)
+int main(void)
 {
-	//char str[40]; // serial output string
-
 	robotSetup(); // initialise ATmega128
-
-	//// display started on serial port
-	//OutputString("\r\n**************\r\n");
-	//OutputString("ROBOT POSITION\r\n");
-	//// display the wheel pwm settings
-	////sprintf(str, "SPEED L=%d R=%d\r\n", LEFT_SPEED, RIGHT_SPEED);
-	//OutputString(str);
-
 	while (1) // loop forever
 	{
+		switch(sys.state.main)
+		{
+			case MAIN_IDLE:
+				//Do nothing state
+				break;
+				
+			case MAIN_GO_TO_POS:
+				break;
+		}
 		
-		//Operate(&pos); // calculate position from wheel counters
 		nfUpdateNavigationData(&sys);
 	}
 }

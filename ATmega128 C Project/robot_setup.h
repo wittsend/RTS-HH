@@ -25,6 +25,25 @@
 #include <stdint.h>		//Allows for specific integer variable sizes
 
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
+typedef enum MainStates
+{
+	MAIN_IDLE,
+	MAIN_GO_TO_POS
+} MainStates;
+
+typedef enum GoToPosStates
+{
+	GTP_TURN,
+	GTP_DRIVE;
+} GoToPosStates;
+
+//A structure that holds state machine states for the system
+typedef struct StateMachines
+{
+	MainStates main,
+	GoToPosStates gtp;
+} StateMachines;
+
 //A structure that holds information about the position and orientation of the robot.
 typedef struct PositionData
 {
@@ -42,6 +61,7 @@ typedef struct PositionData
 //The root structure of the global data tree. 
 typedef struct RobotGlobalData
 {
+	StateMachines state,
 	PositionData pos;
 	uint32_t timeStamp;
 } RobotGlobalData;
