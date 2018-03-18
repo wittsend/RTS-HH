@@ -6,7 +6,7 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* Initialises the serial comunication hardware and provides functions for using it.
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -14,7 +14,7 @@
 *
 * Functions:
 * void uart0Init(void);
-* void OutputString(char* str);
+* uint8_t uartOutputString(char* str);
 *
 */
 
@@ -25,6 +25,9 @@
 #include "uart_driver.h"
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
+#define UART_USE_INTS	1			//Allow the UART to use interrupts for transmission
+#define UART_BUF_MAX	1024		//serial output buffer size
+
 #define UART0_RXCIE		0x00		//Receive complete interrupt enable
 #define UART0_TXCIE		0x00		//Transmit complete interrupt enable
 #define UART0_UDRIE		UART_USE_INTS//Data register empty interrupt enable
@@ -37,6 +40,9 @@
 #define UART0_UCPOL		0x00		//Clock Polarity (NA)
 // 9600 bps = 51, 19200 bps = 25, 38400 bps = 12
 #define UART0_UBRR		12			//Baud rate setting (38400bps)
+
+#define UDREIntDisable	UCSR0B &= ~(1 << UDRIE0)
+#define UDREIntEnable	UCSR0B |= (1 << UDRIE0)	
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 #if UART_USE_INTS == 1
@@ -91,7 +97,7 @@ void uart0Init(void)
 #if UART_USE_INTS == 1
 /*
 * Function:
-* void OutputString(char* str)
+* uint8_t uartOutputString(char* str)
 *
 * Allows the transmission of strings via UART WITH the use of interrupts
 *
@@ -103,28 +109,31 @@ void uart0Init(void)
 * none
 *
 */
-void OutputString(char* str)
+uint8_t uartOutputString(char* str)
 {
 	int length = strlen(str);
-	UCSR0B &= ~(1 << UDRIE0); // disable serial port 0 UDRE interrupt
+	UDREIntDisable;				// disable serial port 0 UDRE interrupt
+	
 	// check for too many chars
 	if (count + length >= UART_BUF_MAX)
 	{
-		UCSR0B |= (1 << UDRIE0); // enable serial port 0 UDRE interrupt
-		return;
+		UDREIntEnable;			//enable serial port 0 UDRE interrupt
+		return 1;				//1 indicates error
 	}
+	
 	// write the characters into the buffer
 	for (int n = 0; n < length; n++)
 	{
 		buffer[tail] = str[n];
 		tail++;
 		if (tail >= UART_BUF_MAX)
-		{
 			tail = 0;
-		}
 	}
+	
 	count += length;
-	UCSR0B |= (1 << UDRIE0); // enable serial port 0 UDRE interrupt
+	UDREIntEnable;				// enable serial port 0 UDRE interrupt
+	
+	return 0;
 }
 
 /*
@@ -153,17 +162,16 @@ ISR(USART0_UDRE_vect)
 		}
 		count--;
 	}
+	
 	if (count == 0) // if there are no more characters
-	{
-		UCSR0B &= ~(1 << UDRIE0); // then disable serial port 0 UDRE interrupt
-	}
+		UDREIntDisable; // then disable serial port 0 UDRE interrupt
 }
 
 #else	//If not using interrupts
 
 /*
 * Function:
-* void OutputString(char* str)
+* uint8_t uartOutputString(char* str)
 *
 * Allows the transmission of strings via UART WITHOUT the use of interrupts
 *
@@ -175,7 +183,7 @@ ISR(USART0_UDRE_vect)
 * none
 *
 */
-void OutputString(char* str)
+uint8_t uartOutputString(char* str)
 {
 	int length = strlen(str);
 	// for each character in the string

@@ -73,7 +73,9 @@ void robotSetup(void)
 	
 	//delay_ms(2500);		//Prevents robot from running away immediately
 	
-
+	// display started on serial port
+	uartOutputString("\r\n****ROBOT HARDWARE INITIALISED****\r\n");
+	uartOutputString("ROBOT POSITION\r\n");
 }
 
 /*
