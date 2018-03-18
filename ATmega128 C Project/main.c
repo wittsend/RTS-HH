@@ -37,16 +37,11 @@ extern RobotGlobalData sys;
 
 int main (void)
 {
-	//char str[40]; // serial output string
+
 
 	robotSetup(); // initialise ATmega128
 
-	//// display started on serial port
-	//OutputString("\r\n**************\r\n");
-	//OutputString("ROBOT POSITION\r\n");
-	//// display the wheel pwm settings
-	////sprintf(str, "SPEED L=%d R=%d\r\n", LEFT_SPEED, RIGHT_SPEED);
-	//OutputString(str);
+
 
 	while (1) // loop forever
 	{
