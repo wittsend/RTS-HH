@@ -13,7 +13,7 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void updateNavigationData(RobotGlobalData *sys);
+* void nfUpdateNavigationData(RobotGlobalData *sys);
 *
 */
 
@@ -29,7 +29,7 @@
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
 * Function:
-* void updateNavigationData(RobotGlobalData *sys)
+* void nfUpdateNavigationData(RobotGlobalData *sys)
 *
 * Retrieves navigation and time data from the robot's sensors and timer
 *
@@ -41,6 +41,23 @@
 * none
 *
 */
-void updateNavigationData(RobotGlobalData *sys);
+void nfUpdateNavigationData(RobotGlobalData *sys);
+
+/*
+* Function:
+* float nfGetDistTravelled(int8_t pulses)
+*
+* Will return the distance a wheel has traveled based on how many pulses have occurred. Distance
+* constants are set in the defines in the motor_driver module
+*
+* Inputs:
+* int8_t pulses
+*	How many pulses to calculate the distance for
+*
+* Returns:
+* A float containing the distance in metres
+*
+*/
+float nfGetDistTravelled(int8_t pulses);
 
 #endif /* NAVIGATION_H_ */

@@ -39,7 +39,9 @@ RobotGlobalData sys =
 		.y				= 0,
 		.heading		= 0,
 		.leftPulses		= 0,
-		.rightPulses	= 0
+		.rightPulses	= 0,
+		.leftTotal		= 0,
+		.rightTotal		= 0
 	},
 	
 	//System time stamp.
