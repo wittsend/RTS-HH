@@ -25,7 +25,6 @@
 #include <stdint.h>		//Allows for specific integer variable sizes
 
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
-
 //A structure that holds information about the position and orientation of the robot.
 typedef struct PositionData
 {
@@ -34,6 +33,8 @@ typedef struct PositionData
 	float heading;			//Heading of the robot (Radians?)
 	int8_t leftPulses;		//Number of pulses from left wheel
 	int8_t rightPulses;		//Number of pulses from right wheel
+	int leftTotal;			//Total left pulses
+	int rightTotal;			//Total right pulses
 	//uint8_t pollEnabled;	//Whether or not to poll the navigation data
 	//uint8_t pollInterval;	//The interval at which to poll
 } PositionData;
