@@ -14,7 +14,7 @@
 *
 * Functions:
 * void uart0Init(void);
-* void OutputString(char* str);
+* void uartOutputString(char* str);
 *
 */
 
@@ -31,6 +31,6 @@
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 void uart0Init(void);
-void OutputString(char* str);
+void uartOutputString(char* str);
 
 #endif /* UART_DRIVER_H_ */

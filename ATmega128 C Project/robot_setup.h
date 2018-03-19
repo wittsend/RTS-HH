@@ -27,20 +27,21 @@
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
 typedef enum MainStates
 {
-	MAIN_IDLE,
-	MAIN_GO_TO_POS
+	M_IDLE,
+	M_GO_TO_POS
 } MainStates;
 
 typedef enum GoToPosStates
 {
+	GTP_START,
 	GTP_TURN,
-	GTP_DRIVE;
+	GTP_DRIVE
 } GoToPosStates;
 
 //A structure that holds state machine states for the system
 typedef struct StateMachines
 {
-	MainStates main,
+	MainStates main;
 	GoToPosStates gtp;
 } StateMachines;
 
@@ -61,7 +62,7 @@ typedef struct PositionData
 //The root structure of the global data tree. 
 typedef struct RobotGlobalData
 {
-	StateMachines state,
+	StateMachines state;
 	PositionData pos;
 	uint32_t timeStamp;
 } RobotGlobalData;

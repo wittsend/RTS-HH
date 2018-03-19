@@ -60,4 +60,36 @@ void nfUpdateNavigationData(RobotGlobalData *sys);
 */
 float nfGetDistTravelled(int8_t pulses);
 
+/*
+* Function:
+* float nfWrapAngle(float angleDeg)
+*
+* Will take any angle in degrees and convert it to its equivalent value between -180 and 180 degrees
+*
+* Inputs:
+* float angleDeg
+*   Angle to wrap (in degrees)
+*
+* Returns:
+* Wrapped equivalent of the given angle
+*
+*/
+float nfWrapAngle(float angleDeg);
+
+/*
+* Function:
+* float nfWrapAngle(float angleDeg)
+*
+* Will take any angle in radians and convert it to its equivalent value between -PI and PI radians
+*
+* Inputs:
+* float angleRad
+*   Angle to wrap (in radians)
+*
+* Returns:
+* Wrapped equivalent of the given angle
+*
+*/
+float nfWrapAngleRad(float angleRad);
+
 #endif /* NAVIGATION_H_ */
