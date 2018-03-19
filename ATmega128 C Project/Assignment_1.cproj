@@ -141,12 +141,6 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="motion.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="motion.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="motor_driver.c">
       <SubType>compile</SubType>
     </Compile>
@@ -157,6 +151,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="navigation.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pid_functions.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pid_functions.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="robot_setup.c">

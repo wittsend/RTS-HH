@@ -1,12 +1,12 @@
 /*
-* motion.h
+* pid_functions.h
 *
 * Author : Matthew Witt (wittsend86@gmail.com)
-* Created: 15/03/2018 10:38:31 AM
+* Created: 19/03/2018 6:50:19 PM
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* Header file for PID functions
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -17,8 +17,8 @@
 *
 */
 
-#ifndef MOTION_H_
-#define MOTION_H_
+#ifndef PID_FUNCTIONS_H_
+#define PID_FUNCTIONS_H_
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
 
@@ -29,4 +29,4 @@
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 
 
-#endif /* MOTION_H_ */
+#endif /* PID_FUNCTIONS_H_ */

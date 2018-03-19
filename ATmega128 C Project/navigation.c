@@ -188,3 +188,41 @@ float nfWrapAngleRad(float angleRad)
 		angleRad += (2*M_PI);
 	return angleRad;
 }
+
+/*
+* Function:
+* float nfDeg2Rad(float deg)
+*
+* Converts an angle from degrees to radians
+*
+* Inputs:
+* float deg
+*   Angle to convert (in degrees)
+*
+* Returns:
+* The equivalent angle in radians
+*
+*/
+float nfDeg2Rad(float deg)
+{
+	return deg*M_PI/180.;
+}
+
+/*
+* Function:
+* float nfRad2Deg(float rad)
+*
+* Converts an angle from radians to degrees
+*
+* Inputs:
+* float rad
+*   Angle to convert (in radians)
+*
+* Returns:
+* The equivalent angle in degrees
+*
+*/
+float nfRad2Deg(float rad)
+{
+	return rad*180./M_PI;
+}

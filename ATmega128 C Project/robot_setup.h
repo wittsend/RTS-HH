@@ -65,6 +65,8 @@ typedef struct RobotGlobalData
 	StateMachines state;
 	PositionData pos;
 	uint32_t timeStamp;
+	uint16_t pidCalcInterval;	//How often to perform PID calculations
+	uint32_t pidNextCalcTime;	//When to perform the next PID calc
 } RobotGlobalData;
 
 //////////////[External Global Variables]///////////////////////////////////////////////////////////

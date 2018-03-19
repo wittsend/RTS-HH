@@ -92,4 +92,36 @@ float nfWrapAngle(float angleDeg);
 */
 float nfWrapAngleRad(float angleRad);
 
+/*
+* Function:
+* float nfDeg2Rad(float deg)
+*
+* Converts an angle from degrees to radians
+*
+* Inputs:
+* float deg
+*   Angle to convert (in degrees)
+*
+* Returns:
+* The equivalent angle in radians
+*
+*/
+float nfDeg2Rad(float deg);
+
+/*
+* Function:
+* float nfRad2Deg(float rad)
+*
+* Converts an angle from radians to degrees
+*
+* Inputs:
+* float rad
+*   Angle to convert (in radians)
+*
+* Returns:
+* The equivalent angle in degrees
+*
+*/
+float nfRad2Deg(float rad);
+
 #endif /* NAVIGATION_H_ */

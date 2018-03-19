@@ -51,8 +51,12 @@ RobotGlobalData sys =
 		.rightTotal		= 0
 	},
 	
+	//PID calculation interval (ms)
+	.pidCalcInterval	= 100,
+	.pidNextCalcTime	= 0,
+	
 	//System time stamp.
-	.timeStamp		= 0
+	.timeStamp			= 0
 };
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
