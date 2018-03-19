@@ -69,21 +69,21 @@ void uart0Init(void)
 {
 	//Load the UART registers with the values defined above
 	UCSR0B 
-	=	((UART0_RXCIE<<7)&0x01)
-	|	((UART0_TXCIE<<6)&0x01)
-	|	((UART0_UDRIE<<5)&0x01)
-	|	((UART0_RXEN<<4)&0x01)
-	|	((UART0_TXEN<<3)&0x01)
-	|	((UART0_UCSZ<<2)&0x04);
+	=	((UART0_RXCIE&0x01)<<7)
+	|	((UART0_TXCIE&0x01)<<6)
+	|	((UART0_UDRIE&0x01)<<5)
+	|	((UART0_RXEN&0x01)<<4)
+	|	((UART0_TXEN&0x01)<<3)
+	|	((UART0_UCSZ&0x04)<<2);
 	
 	UCSR0C
-	=	((UART0_UMSEL<<6)&0x01)
-	|	((UART0_UPM<<4)&0x03)
-	|	((UART0_USBS<<3)&0x01)
-	|	((UART0_UCSZ<<1)&0x03)
-	|	((UART0_UCPOL<<0)&0x01);
+	=	((UART0_UMSEL&0x01)<<6)
+	|	((UART0_UPM&0x03)<<4)
+	|	((UART0_USBS&0x01)<<3)
+	|	((UART0_UCSZ&0x03)<<1)
+	|	((UART0_UCPOL&0x01)<<0);
 	
-	UBRR0H = (UART0_UBRR & 0xFF00); 
+	UBRR0H = ((UART0_UBRR & 0xFF00)>>8); 
 	UBRR0L = (UART0_UBRR & 0x00FF);
 	
 	#if UART_USE_INTS == 1

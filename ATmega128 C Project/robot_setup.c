@@ -32,6 +32,13 @@
 //Initialise the robot's global data structure
 RobotGlobalData sys = 
 {
+	//Robot's FSM initial states are set here
+	.state =
+	{
+		.main = M_GO_TO_POS,
+		.gtp = GTP_START
+	},
+	
 	//Initial position data
 	.pos =
 	{
@@ -71,11 +78,11 @@ void robotSetup(void)
 
 	sei();				//Globally enable interrupts.
 	
-	//delay_ms(2500);		//Prevents robot from running away immediately
-	
 	// display started on serial port
-	uartOutputString("\r\n****ROBOT HARDWARE INITIALISED****\r\n");
+	uartOutputString("\r\n**************\r\n");
 	uartOutputString("ROBOT POSITION\r\n");
+	
+	//delay_ms(2500);		//Prevents robot from running away immediately
 }
 
 /*

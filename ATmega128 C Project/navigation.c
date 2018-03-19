@@ -23,6 +23,7 @@
 #include "timer.h"			//For getting the system time stamp.
 #include "uart_driver.h"	//For outputting position data to PC
 #include "motor_driver.h"	//For reading from the wheel encoders
+#include "uart_driver.h"	//For communicating with the PC
 #include "navigation.h"
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
@@ -79,6 +80,7 @@ void nfCalcPosition(RobotGlobalData *sys)
 	
 	//Update position structure.
 	sys->pos.heading += dTheta;
+	sys->pos.heading = nfWrapAngleRad(sys->pos.heading);
 	sys->pos.x += dx;
 	sys->pos.y += dy;
 	
@@ -139,4 +141,50 @@ void nfUpdateNavigationData(RobotGlobalData *sys)
 float nfGetDistTravelled(int8_t pulses)
 {
 	return pulses*PULSE_DIST;
+}
+
+/*
+* Function:
+* float nfWrapAngle(float angleDeg)
+*
+* Will take any angle in degrees and convert it to its equivalent value between -180 and 180 degrees
+*
+* Inputs:
+* float angleDeg
+*   Angle to wrap (in degrees)
+*
+* Returns:
+* Wrapped equivalent of the given angle
+*
+*/
+float nfWrapAngle(float angleDeg)
+{
+	while(angleDeg > 180.0)
+		angleDeg -= 360.0;
+	while(angleDeg < -179.99)
+		angleDeg += 360.0;
+	return angleDeg;
+}
+
+/*
+* Function:
+* float nfWrapAngle(float angleDeg)
+*
+* Will take any angle in radians and convert it to its equivalent value between -PI and PI radians
+*
+* Inputs:
+* float angleRad
+*   Angle to wrap (in radians)
+*
+* Returns:
+* Wrapped equivalent of the given angle
+*
+*/
+float nfWrapAngleRad(float angleRad)
+{
+	while(angleRad > M_PI)
+		angleRad -= (2*M_PI);
+	while(angleRad < (-1*M_PI))
+		angleRad += (2*M_PI);
+	return angleRad;
 }
