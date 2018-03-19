@@ -6,7 +6,7 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* Header file for the UART communication driver
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -14,7 +14,7 @@
 *
 * Functions:
 * void uart0Init(void);
-* void uartOutputString(char* str);
+* uint8_t uartOutputString(char* str);
 *
 */
 
@@ -22,15 +22,14 @@
 #define UART_DRIVER_H_
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
+#include <stdio.h>			//sprintf will most likely be needed for outputting strings
 
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
-#define UART_USE_INTS				1		//Allow the UART to use interrupts for transmission
-#define UART_BUF_MAX				1000	//serial output buffer size
 
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 void uart0Init(void);
-void uartOutputString(char* str);
+uint8_t uartOutputString(char* str);
 
 #endif /* UART_DRIVER_H_ */

@@ -19,9 +19,9 @@
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
 #include "robot_setup.h"
-#include <stdio.h>			//sprintf
 #include <math.h>			//Trig functions
 #include "timer.h"			//For getting the system time stamp.
+#include "uart_driver.h"	//For outputting position data to PC
 #include "motor_driver.h"	//For reading from the wheel encoders
 #include "uart_driver.h"	//For communicating with the PC
 #include "navigation.h"
@@ -84,7 +84,6 @@ void nfCalcPosition(RobotGlobalData *sys)
 	sys->pos.x += dx;
 	sys->pos.y += dy;
 	
-	/***Move this to a comunication Module***/
 	// display the new position (convert heading to degrees)
 	char str[100]; // serial output string
 	sprintf(str, "POS,%6.3f,%6.3f,%6.1f,%1d,%1d,%4d,%4d,%4i\r\n",
