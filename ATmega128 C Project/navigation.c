@@ -226,3 +226,32 @@ float nfRad2Deg(float rad)
 {
 	return rad*180./M_PI;
 }
+
+/*
+* Function:
+* void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance)
+*
+* Calculates the distance and heading between two points in space (m)
+*
+* Inputs:
+* float x1, y1:
+*	The cordinates of the first point
+* float x2, y2:
+*	The coordinates of the second point
+* float *heading:
+*	A pointer where the relative heading between the two points will be returned to
+* float *distance:
+*	A pointer where the distance will be returned.
+*
+* Returns:
+* none
+*
+*/
+void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance)
+{
+	float diffX = (x1 - x2);
+	float diffY = (y1 - y2);
+	*distance = sqrt(diffX*diffX + diffY*diffY);
+	
+	*heading = nfWrapAngleRad(atan2(diffY, diffX));
+}

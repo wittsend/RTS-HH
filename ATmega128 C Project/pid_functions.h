@@ -27,6 +27,44 @@
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
+/*
+* Function:
+* pidRotateToHeading(float heading, RobotGlobalData *sys)
+*
+* Allows the robot to rotate on the spot to face the desired heading.
+*
+* Inputs:
+* float heading:
+*	The target heading in radians
+* RobotGlobalData *sys
+*	A pointer to the robot global data structure
+*
+* Returns:
+* Returns the proportional error while the maneuvre is in progress, otherwise returns a 0 when
+* complete
+*
+*/
+float pidRotateToHeading(float heading, RobotGlobalData *sys);
 
+/*
+* Function:
+* pidDriveToHeading(float heading, RobotGlobalData *sys)
+*
+* Allows the robot to drive a path at a given speed towards the given heading.
+*
+* Inputs:
+* float speed:
+*	A PWM speed value between -1023 and 1023 that the robot will drive at
+* float heading:
+*	The target heading in radians
+* RobotGlobalData *sys
+*	A pointer to the robot global data structure
+*
+* Returns:
+* Returns the proportional error while the maneuvre is in progress, otherwise returns a 0 when
+* the robot is on track.
+*
+*/
+float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys);
 
 #endif /* PID_FUNCTIONS_H_ */
