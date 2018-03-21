@@ -67,4 +67,5 @@ float pidRotateToHeading(float heading, RobotGlobalData *sys);
 */
 float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys);
 
+float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys);
 #endif /* PID_FUNCTIONS_H_ */

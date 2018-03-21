@@ -21,6 +21,7 @@
 #include "robot_setup.h"
 #include "motor_driver.h"
 #include "navigation.h"
+#include "pid_functions.h"
 #include <math.h>			//M_PI
 #include <stdlib.h>			//abs()
 
@@ -52,7 +53,10 @@ int main(void)
 				if(sys.timeStamp >= nextPIDUpdate)
 				{
 					nextPIDUpdate = sys.timeStamp + 100;
-					if(!pidRotateToHeading(M_PI_2, &sys)) sys.state.main = M_IDLE;
+					//if(!pidGoToPosition(1023, 1, 1, &sys)) sys.state.main = M_IDLE;
+					//if(!pidRotateToHeading(45, &sys)) sys.state.main = M_IDLE;
+					//if(!pidDriveToHeading(1023, 45, &sys)) sys.state.main = M_IDLE;
+					pidDriveToHeading(1023, 45, &sys);
 				}
 				
 				//moveRobot(-256, 1023);

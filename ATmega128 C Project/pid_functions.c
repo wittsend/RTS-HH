@@ -20,12 +20,15 @@
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
 #include "robot_setup.h"
 #include "motor_driver.h"
-
+#include "navigation.h"
+#include <math.h>
+#include "uart_driver.h"			//Debug strings
 #include "pid_functions.h"
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
 //Rotate to heading PID function constants
 #define MF_HEADING_ERR	0.008727	//Error angle allowed before the maneuver is deemed complete
+#define MF_DIST_ERR		0.05		//Error distance threshold
 
 #define RTH_KP			250			//Proportional error constant
 #define RTH_KI			0			//Integral error constant
@@ -34,7 +37,7 @@
 
 #define DTH_KP			250			//Proportional error constant
 #define DTH_KI			0			//Integral error constant
-#define DTH_KD			245			//Derivative error constant
+#define DTH_KD			0			//Derivative error constant
 #define DTH_IERR_MAX	0			//Maximum value of the integral error
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
@@ -160,19 +163,67 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 	//If turnRatio ends up being out of range, then dial it back
 	turnRatio = capToRangeFlt((DTH_KP*pErr + DTH_KI*iErr + DTH_KD*dErr), -1023, 1023);
 
-	//If error value is less than the value set in MF_HEADING_ERR then exit with a 0 (indicating
-	//that the maneuver is complete
-	if((fabs(pErr) < MF_HEADING_ERR))
-	{
-		motorStop();
-		pErrOld = 0;			//Clear the static vars so they don't interfere next time we call this
-		//function
-		iErr = 0;
-		return 0;
-	} else {
-		//The amount to turn is governed by the PID. Speed is set by the function parameter
-		moveRobot(speed, turnRatio);
-		return pErr;	//If not, return pErr
-	}
+	moveRobot(speed, turnRatio);
+	return pErr;	//If not, return pErr
 }
 
+float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
+{
+	char debugString[100];
+	float distance;
+	static float heading;
+	
+	switch(sys->state.gtp)
+	{
+		case GTP_START:
+			//Calculate the heading and distance to the target.
+			nfGetDist(sys->pos.x, sys->pos.y, x, y, &heading, &distance);
+			
+			sprintf(debugString, "GTP_START, Dist:%1.2fm, Heading:%1.2f deg\r\n", distance, nfRad2Deg(heading));
+			uartOutputString(debugString);
+			
+			//If we aren't close enough to the target
+			if(distance > MF_DIST_ERR)
+			{
+				sprintf(debugString, "Performing Turn...\r\n");
+				uartOutputString(debugString);
+				sys->state.gtp = GTP_TURN;	//Start turning
+			} else {
+				sprintf(debugString, "Close enough already.\r\n");
+				uartOutputString(debugString);
+				return sys->state.gtp;		//If we are close enough, do no more
+			}
+			break;
+			
+		case GTP_TURN:
+			if(!pidRotateToHeading(heading, sys))
+				sprintf(debugString, "Turn complete, driving forward...\r\n");
+				uartOutputString(debugString);
+				sys->state.gtp = GTP_DRIVE;
+			break;
+			
+		case GTP_DRIVE:
+			//Calculate the heading and distance to the target.
+			nfGetDist(sys->pos.x, sys->pos.y, x, y, &heading, &distance);
+			pidDriveToHeading(distance*2048, heading, sys);
+			sprintf(debugString, "Distance to go: %1.2fm Heading: %1.2fdeg\r\n", distance, nfRad2Deg(heading));
+			uartOutputString(debugString);
+			sprintf(debugString, "Robot Heading: %1.2fdeg\r\n", nfRad2Deg(sys->pos.heading));
+			uartOutputString(debugString);
+			if(distance < MF_DIST_ERR)
+			{
+				sprintf(debugString, "Destination reached.\r\n");
+				uartOutputString(debugString);
+				motorStop();
+				sys->state.gtp = GTP_FINISHED;
+			}
+			break;
+			
+		case GTP_FINISHED:
+			distance = 0;
+			heading = 0;
+			sys->state.gtp = GTP_START;
+			break;
+	}
+	return sys->state.gtp;
+}

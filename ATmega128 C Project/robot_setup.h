@@ -35,7 +35,8 @@ typedef enum GoToPosStates
 {
 	GTP_START,
 	GTP_TURN,
-	GTP_DRIVE
+	GTP_DRIVE,
+	GTP_FINISHED
 } GoToPosStates;
 
 //A structure that holds state machine states for the system

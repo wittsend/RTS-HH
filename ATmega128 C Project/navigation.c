@@ -249,8 +249,8 @@ float nfRad2Deg(float rad)
 */
 void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance)
 {
-	float diffX = (x1 - x2);
-	float diffY = (y1 - y2);
+	float diffX = (x2 - x1);
+	float diffY = (y2 - y1);
 	*distance = sqrt(diffX*diffX + diffY*diffY);
 	
 	*heading = nfWrapAngleRad(atan2(diffY, diffX));
