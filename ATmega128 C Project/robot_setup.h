@@ -13,7 +13,9 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void robotSetup(void);
+* int32_t capToRangeInt(int32_t valueToCap, int32_t minimumVal, int32_t maximumVal)
+* float capToRangeFlt(float valueToCap, float minimumVal, float maximumVal)
 *
 */
 
@@ -25,6 +27,7 @@
 #include <stdint.h>		//Allows for specific integer variable sizes
 
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
+//State machine state definitions
 typedef enum MainStates
 {
 	M_IDLE,
@@ -39,6 +42,7 @@ typedef enum GoToPosStates
 	GTP_FINISHED
 } GoToPosStates;
 
+//Global data structure definitions
 //A structure that holds state machine states for the system
 typedef struct StateMachines
 {
@@ -89,7 +93,6 @@ extern RobotGlobalData sys;
 *
 */
 void robotSetup(void);
-
 
 /*
 * Function:

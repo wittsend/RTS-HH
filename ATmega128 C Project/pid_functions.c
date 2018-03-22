@@ -13,7 +13,9 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* float pidRotateToHeading(float heading, RobotGlobalData *sys);
+* float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys);
+* float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys);
 *
 */
 
@@ -26,16 +28,18 @@
 #include "pid_functions.h"
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
-//Rotate to heading PID function constants
+
 //#define MF_HEADING_ERR	0.008727	//Error angle allowed before the maneuver is deemed complete
 #define MF_HEADING_ERR	0.1745		//Error angle allowed before the maneuver is deemed complete
 #define MF_DIST_ERR		0.05		//Error distance threshold
 
+//Rotate to heading PID function constants
 #define RTH_KP			300			//Proportional error constant
 #define RTH_KI			400			//Integral error constant
 #define RTH_KD			400			//Derivative error constant
 #define RTH_IERR_MAX	0.5236		//Maximum value of the integral error
 
+//Drive to heading PID function constants
 #define DTH_KP			300			//Proportional error constant
 #define DTH_KI			400			//Integral error constant
 #define DTH_KD			400			//Derivative error constant
@@ -172,6 +176,26 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 	return pErr;	//If not, return pErr
 }
 
+/*
+* Function:
+* pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
+*
+* Will drive the robot to an x y position in 2D space
+*
+* Inputs:
+* float speed:
+*	A PWM speed value between 0 and 1023 that the robot will drive at
+* float x:
+*	The target x position in metres
+* float y:
+*	The target y position in metres
+* RobotGlobalData *sys
+*	A pointer to the robot global data structure
+*
+* Returns:
+* The state that this function is in. If returns a 0, then the maneuvre is complete.
+*
+*/
 float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
 {
 	char debugString[100];
@@ -181,6 +205,9 @@ float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
 	
 	switch(sys->state.gtp)
 	{
+		//Calculate the distance and heading to the target from the current position.
+		//If rotation is necessary, then switch to the turn state. Else, if the distance is greater
+		//than the threshold, drive forward to reduce it, otherwise just exit the function with 0.
 		case GTP_START:
 			//Calculate the heading and distance to the target.
 			nfGetDist(sys->pos.x, sys->pos.y, x, y, &heading, &distance);
@@ -200,14 +227,17 @@ float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
 				return sys->state.gtp;		//If we are close enough, do no more
 			}
 			break;
-			
+		
+		//If the robot is not facing the target, then turn to face it. Once done, move to the DRIVE
+		//state.
 		case GTP_TURN:
 			if(!pidRotateToHeading(heading, sys))
 				sprintf(debugString, "Turn complete, driving forward...\r\n");
 				uartOutputString(debugString);
 				sys->state.gtp = GTP_DRIVE;
 			break;
-			
+		
+		//Drive towards the target, keeping an eye on the distance.	
 		case GTP_DRIVE:
 			//Calculate the heading and distance to the target.
 			nfGetDist(sys->pos.x, sys->pos.y, x, y, &heading, &distance);

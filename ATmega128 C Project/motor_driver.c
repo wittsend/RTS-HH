@@ -265,7 +265,7 @@ uint8_t moveRobot(float speed, float turnRatio)
 	
 	//Calculate speed ratios. Positive turn ratio will see robot veer to the right
 	float rotationalSpeed = fabs(speed)*(turnRatio/1023.0);
-	float straightSpeed = fabs(speed) - fabs(rotationalSpeed/2);
+	float straightSpeed = fabs(speed) - fabs(rotationalSpeed);
 	
 	//Calculate individual motor speeds
 	if(speed > 0)
@@ -273,8 +273,8 @@ uint8_t moveRobot(float speed, float turnRatio)
 		rightMotorSpeed		= (int16_t)(straightSpeed + rotationalSpeed);
 		leftMotorSpeed		= (int16_t)(straightSpeed - rotationalSpeed);
 	} else {
-		rightMotorSpeed		= (int16_t)(-straightSpeed + rotationalSpeed);
-		leftMotorSpeed		= (int16_t)(-straightSpeed - rotationalSpeed);		
+		rightMotorSpeed		= (int16_t)(-straightSpeed - rotationalSpeed);
+		leftMotorSpeed		= (int16_t)(-straightSpeed + rotationalSpeed);		
 	}
 	
 	//Apply speeds and directions to motors

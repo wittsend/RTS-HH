@@ -13,7 +13,9 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* float pidRotateToHeading(float heading, RobotGlobalData *sys);
+* float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys);
+* float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys);
 *
 */
 

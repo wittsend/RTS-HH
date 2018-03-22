@@ -13,7 +13,9 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void robotSetup(void);
+* int32_t capToRangeInt(int32_t valueToCap, int32_t minimumVal, int32_t maximumVal)
+* float capToRangeFlt(float valueToCap, float minimumVal, float maximumVal)
 *
 */
 
