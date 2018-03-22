@@ -85,11 +85,11 @@ void nfCalcPosition(RobotGlobalData *sys)
 	sys->pos.y += dy;
 	
 	// display the new position (convert heading to degrees)
-	char str[100]; // serial output string
-	sprintf(str, "POS,%6.3f,%6.3f,%6.1f,%1d,%1d,%4d,%4d,%4i\r\n",
-		sys->pos.x, sys->pos.y, sys->pos.heading * 180. / M_PI,	sys->pos.leftPulses,
-		sys->pos.rightPulses, sys->pos.leftTotal, sys->pos.rightTotal, sys->timeStamp);
-	uartOutputString(str);	
+	//char str[100]; // serial output string
+	//sprintf(str, "POS,%6.3f,%6.3f,%6.1f,%1d,%1d,%4d,%4d,%4i\r\n",
+		//sys->pos.x, sys->pos.y, sys->pos.heading * 180. / M_PI,	sys->pos.leftPulses,
+		//sys->pos.rightPulses, sys->pos.leftTotal, sys->pos.rightTotal, sys->timeStamp);
+	//uartOutputString(str);	
 }
 
 /*

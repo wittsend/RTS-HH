@@ -26,7 +26,7 @@
 #include <stdlib.h>			//abs()
 
 //////////////[Defines]/////////////////////////////////////////////////////////////////////////////
-
+#define PID_UPDATE_RATE	100
 
 //////////////[Private Global Variables]///////////////////////////////////////////////////////////
 extern RobotGlobalData sys;
@@ -36,10 +36,11 @@ float pidRotateToHeading(float heading, RobotGlobalData *sys);
 
 int main(void)
 {
+	static uint32_t nextPIDUpdate = PID_UPDATE_RATE;
 	robotSetup(); // initialise ATmega128
 	
-	uint32_t nextPIDUpdate = 100;
 	
+	//char debugString()
 	while (1) // loop forever
 	{
 		switch(sys.state.main)
@@ -52,16 +53,18 @@ int main(void)
 			case M_GO_TO_POS:
 				if(sys.timeStamp >= nextPIDUpdate)
 				{
-					nextPIDUpdate = sys.timeStamp + 100;
+					nextPIDUpdate = sys.timeStamp + PID_UPDATE_RATE;
 					//if(!pidGoToPosition(1023, 1, 1, &sys)) sys.state.main = M_IDLE;
-					//if(!pidRotateToHeading(45, &sys)) sys.state.main = M_IDLE;
-					//if(!pidDriveToHeading(1023, 45, &sys)) sys.state.main = M_IDLE;
-					pidDriveToHeading(1023, 45, &sys);
-				}
+					//if(!pidRotateToHeading(nfDeg2Rad(-45), &sys)) sys.state.main = M_IDLE;
+					//if(!pidDriveToHeading(1023., nfDeg2Rad(-45), &sys)) sys.state.main = M_IDLE;
+					//pidDriveToHeading(1023, 45, &sys);
+					//moveRobot(400, 0);
 				
-				//moveRobot(-256, 1023);
-				//sys.state.main = M_IDLE;
-				break;
+					//moveRobot(1023, 300);
+					//sys.state.main = M_IDLE;
+					motorStop();
+					break;
+				}
 		}
 		
 		nfUpdateNavigationData(&sys);
