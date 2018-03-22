@@ -68,7 +68,7 @@ void nfCalcPosition(RobotGlobalData *sys)
 		r	= (TRACK_WIDTH_H*(sys->pos.rightPulses + sys->pos.leftPulses))
 			/(float)(sys->pos.rightPulses - sys->pos.leftPulses);
 		dx	= r*(sin(sys->pos.heading + dTheta) - sin(sys->pos.heading));
-		dy	= r*(cos(sys->pos.heading) - cos(sys->pos.heading - dTheta));
+		dy	= r*(cos(sys->pos.heading) - cos(sys->pos.heading + dTheta));
 	} else {
 		dx	= PULSE_DIST*sys->pos.rightPulses*cos(sys->pos.heading);
 		dy	= PULSE_DIST*sys->pos.rightPulses*sin(sys->pos.heading);
