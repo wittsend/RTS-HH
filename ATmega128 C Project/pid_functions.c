@@ -179,7 +179,8 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 	//If turnRatio ends up being out of range, then dial it back
 	turnRatio = capToRangeFlt((DTH_KP*pErr + DTH_KI*iErr + DTH_KD*dErr), -1023., 1023.);
 	
-	sprintf(debugStr, "pErr:%1.2f, iErr:%1.2f, dErr:%1.2f\r\n", pErr, iErr, dErr);
+	sprintf(debugStr, "pErr:%1.2f, iErr:%1.2f, dErr:%1.2f, turnRatio:%1.2f\r\n", pErr, iErr, dErr
+		, turnRatio);
 		uartOutputString(debugStr);
 		
 	moveRobot(speed, turnRatio);

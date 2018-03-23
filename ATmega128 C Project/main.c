@@ -56,11 +56,11 @@ int main(void)
 					nextPIDUpdate = sys.timeStamp + PID_UPDATE_RATE;
 					//if(!pidGoToPosition(1023, 0.25, 0.25, &sys)) sys.state.main = M_IDLE;
 					//if(!pidRotateToHeading(nfDeg2Rad(180), &sys)) sys.state.main = M_IDLE;
-					pidDriveToHeading(1023., nfDeg2Rad(0), &sys);
+					//pidDriveToHeading(1023., nfDeg2Rad(0), &sys);
 					if(sys.timeStamp > 5000) sys.state.main = M_IDLE;	//Timeout after 10 seconds
 					
 					//pidDriveToHeading(1023, 45, &sys);
-					//moveRobot(400, 0);
+					moveRobot(1023, -512);
 				
 					//sys.state.main = M_IDLE;
 					//motorStop();
