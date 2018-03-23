@@ -137,7 +137,7 @@ void motorInit(void)
 	|	(TIMER1_WGM & 0x03);
 	
 	TCCR1B
-	|=	((TIMER1_WGM & 0x0C)<<3)
+	|=	((TIMER1_WGM & 0x0C)<<1)
 	|	(TIMER1_CS);
 	
 	motorLeftSpeed = 0;

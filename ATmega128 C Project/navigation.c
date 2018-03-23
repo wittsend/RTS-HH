@@ -29,10 +29,12 @@
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
 //Robot dimensions
 #define TRACK_WIDTH			0.10640		//Track width of robots wheels (m)
-#define TRACK_WIDTH_H		0.0532		//Half track width (m)
-#define TRACK_WIDTH_P		14.9564		//Track width in pulses
-#define PULSE_DIST			0.007114	//Distance travelled in one encoder pulse (m)
-#define PULSE_ANG			0.06686		//Angle rotated in one pulse (PULSE_DIST/TRACK_WIDTH) (rad)
+//#define TRACK_WIDTH_H		0.0532		//Half track width (m)
+#define TRACK_WIDTH_H		(TRACK_WIDTH/2)//Half track width (m)
+#define PULSE_DIST			0.007514	//Distance travelled in one encoder pulse (m)
+//#define PULSE_ANG			0.06780		//Angle rotated in one pulse (PULSE_DIST/TRACK_WIDTH) (rad)
+#define PULSE_ANG			(PULSE_DIST/TRACK_WIDTH)//Angle rotated in one pulse 
+													//(PULSE_DIST/TRACK_WIDTH) (rad)
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 
@@ -85,11 +87,12 @@ void nfCalcPosition(RobotGlobalData *sys)
 	sys->pos.y += dy;
 	
 	// display the new position (convert heading to degrees)
-	//char str[100]; // serial output string
-	//sprintf(str, "POS,%6.3f,%6.3f,%6.1f,%1d,%1d,%4d,%4d,%4i\r\n",
-		//sys->pos.x, sys->pos.y, sys->pos.heading * 180. / M_PI,	sys->pos.leftPulses,
-		//sys->pos.rightPulses, sys->pos.leftTotal, sys->pos.rightTotal, sys->timeStamp);
-	//uartOutputString(str);	
+	char str[100]; // serial output string
+	sprintf(str, "POS,%6.3f,%6.3f,%6.1f,%1d,%1d,%4d,%4d,%4i\r\n",
+		sys->pos.x, sys->pos.y, sys->pos.heading * 180. / M_PI,	sys->pos.leftPulses,
+		sys->pos.rightPulses, sys->pos.leftTotal, sys->pos.rightTotal, sys->timeStamp);
+	
+	uartOutputString(str);	
 }
 
 /*

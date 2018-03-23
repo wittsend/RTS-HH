@@ -29,21 +29,23 @@
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
 
-//#define MF_HEADING_ERR	0.05	//Error angle allowed before the maneuver is deemed complete
-#define MF_HEADING_ERR	0.1745		//Error angle allowed before the maneuver is deemed complete
+#define MF_HEADING_ERR	0.05	//Error angle allowed before the maneuver is deemed complete
+//#define MF_HEADING_ERR	0.1745		//Error angle allowed before the maneuver is deemed complete
+//#define MF_HEADING_ERR	0.09		//Error angle allowed before the maneuver is deemed complete
+//#define MF_HEADING_ERR	0.01745		//Error angle allowed before the maneuver is deemed complete
 #define MF_DIST_ERR		0.05		//Error distance threshold
 
 //Rotate to heading PID function constants
 #define RTH_KP			500			//Proportional error constant
-#define RTH_KI			600			//Integral error constant
-#define RTH_KD			80			//Derivative error constant
-#define RTH_IERR_MAX	0.1745		//Maximum value of the integral error
+#define RTH_KI			800			//Integral error constant
+#define RTH_KD			400			//Derivative error constant
+#define RTH_IERR_MAX	0.26175		//Maximum value of the integral error
 
 //Drive to heading PID function constants
-#define DTH_KP			1000			//Proportional error constant
-#define DTH_KI			0			//Integral error constant
-#define DTH_KD			0			//Derivative error constant
-#define DTH_IERR_MAX	0.5236		//Maximum value of the integral error
+#define DTH_KP			1600		//Proportional error constant
+#define DTH_KI			800			//Integral error constant
+#define DTH_KD			320			//Derivative error constant
+#define DTH_IERR_MAX	0.1745		//Maximum value of the integral error
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 
@@ -68,13 +70,13 @@
 float pidRotateToHeading(float heading, RobotGlobalData *sys)
 {
 	//Set up variables
-	//char debugStr[100];
 	float pErr;						//Proportional (signed) error
 	static float pErrOld = 0;		//Old proportional Error
 	static float iErr = 0;			//Integral Error_
 	float dErr;						//Derivative error
 	float motorSpeed;				//Stores motorSpeed calculated by PID sum
-
+	static int16_t successCount = 0;//This number should be over a certian threshold to exit this 
+									//function
 	
 	//Make sure heading is in range (-pi to pi)
 	heading = nfWrapAngleRad(heading);
@@ -101,22 +103,23 @@ float pidRotateToHeading(float heading, RobotGlobalData *sys)
 	//If motorSpeed ends up being out of range, then dial it back
 	motorSpeed = capToRangeFlt((RTH_KP*pErr + RTH_KI*iErr + RTH_KD*dErr), -1023, 1023);
 	moveRobot(motorSpeed, 1023.);
+	
 	//If error value is less than the value set in MF_HEADING_ERR then exit with a 0 (indicating
 	//that the maneuver is complete
-	
-	//sprintf(debugStr, "pErr:%1.2f, iErr:%1.2f, dErr:%1.2f\r\n", pErr, iErr, dErr);
-		//uartOutputString(debugStr);
-	
 	if((fabs(pErr) < MF_HEADING_ERR))
 	{
-		motorStop();
-		pErrOld = 0;			//Clear the static vars so they don't interfere next time we call this
-								//function
-		iErr = 0;
-		
-		//sprintf(debugStr, "Complete\r\n");
-		//uartOutputString(debugStr);
-		return 0;
+		if(successCount < 3)
+		{
+			successCount++;
+			return pErr;
+		} else {
+			motorStop();
+			pErrOld = 0;			//Clear the static vars so they don't interfere next time we call this
+									//function
+			iErr = 0;
+			successCount = 0;
+			return 0;
+		}
 	} else {
 		//Keeping the turn ratio at 1023 makes the robot rotate on the spot.
 		return pErr;	//If not, return pErr
@@ -144,7 +147,6 @@ float pidRotateToHeading(float heading, RobotGlobalData *sys)
 */
 float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 {
-	char debugStr[100];
 	//Set up variables
 	float pErr;						//Proportional (signed) error
 	static float pErrOld = 0;		//Old proportional Error
@@ -156,7 +158,7 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 	heading = nfWrapAngleRad(heading);
 	
 	//Calculate proportional error values
-	pErr = heading - sys->pos.heading;				//Signed Error
+	pErr = heading - sys->pos.heading;//Signed Error
 
 	//Force the P controller to always take the shortest path to the destination.
 	//For example if the robot was currently facing at -120 degrees and the target was 130 degrees,
@@ -166,10 +168,9 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 	if(pErr < (-1*M_PI))
 		pErr += (2*M_PI);
 
-	iErr += pErr;									//Integral error
-	dErr = pErr - pErrOld;							//Derivative error
+	iErr += pErr;					//Integral error
+	dErr = pErr - pErrOld;			//Derivative error
 	
-
 	//Store pErr for calculating dErr next time around.
 	pErrOld = pErr;
 	
@@ -178,13 +179,9 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 	
 	//If turnRatio ends up being out of range, then dial it back
 	turnRatio = capToRangeFlt((DTH_KP*pErr + DTH_KI*iErr + DTH_KD*dErr), -1023., 1023.);
-	
-	sprintf(debugStr, "pErr:%1.2f, iErr:%1.2f, dErr:%1.2f, turnRatio:%1.2f\r\n", pErr, iErr, dErr
-		, turnRatio);
-		uartOutputString(debugStr);
 		
 	moveRobot(speed, turnRatio);
-	return pErr;	//If not, return pErr
+	return pErr;					//If not, return pErr
 }
 
 /*
@@ -209,9 +206,7 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 */
 float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
 {
-	char debugString[100];
 	float distance;
-	float errorHeading = 0;
 	static float heading;
 	
 	switch(sys->state.gtp)
@@ -222,20 +217,12 @@ float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
 		case GTP_START:
 			//Calculate the heading and distance to the target.
 			nfGetDist(sys->pos.x, sys->pos.y, x, y, &heading, &distance);
-			
-			sprintf(debugString, "GTP_START, Dist:%1.2fm, Heading:%1.2f deg\r\n", distance, 
-				nfRad2Deg(heading));
-			uartOutputString(debugString);
-			
+
 			//If we aren't close enough to the target
 			if(distance > MF_DIST_ERR)
 			{
-				sprintf(debugString, "Performing Turn...\r\n");
-				uartOutputString(debugString);
 				sys->state.gtp = GTP_TURN;	//Start turning
 			} else {
-				sprintf(debugString, "Close enough already.\r\n");
-				uartOutputString(debugString);
 				return sys->state.gtp;		//If we are close enough, do no more
 			}
 			break;
@@ -244,8 +231,6 @@ float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
 		//state.
 		case GTP_TURN:
 			if(!pidRotateToHeading(heading, sys))
-				sprintf(debugString, "Turn complete, driving forward...\r\n");
-				uartOutputString(debugString);
 				sys->state.gtp = GTP_DRIVE;
 			break;
 		
@@ -253,18 +238,10 @@ float pidGoToPosition(float speed, float x, float y, RobotGlobalData *sys)
 		case GTP_DRIVE:
 			//Calculate the heading and distance to the target.
 			nfGetDist(sys->pos.x, sys->pos.y, x, y, &heading, &distance);
-			errorHeading = pidDriveToHeading(distance*8192, heading, sys);
-			
-			sprintf(debugString, "Distance to go: %1.2fm Err Heading: %1.2fdeg\r\n", distance, 
-				nfRad2Deg(errorHeading));
-			uartOutputString(debugString);
-			sprintf(debugString, "Robot Heading: %1.2fdeg\r\n", nfRad2Deg(sys->pos.heading));
-			uartOutputString(debugString);
+			pidDriveToHeading(distance*8192, heading, sys);
 			
 			if(distance < MF_DIST_ERR)
 			{
-				sprintf(debugString, "Destination reached.\r\n");
-				uartOutputString(debugString);
 				motorStop();
 				sys->state.gtp = GTP_FINISHED;
 			}

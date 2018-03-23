@@ -88,7 +88,7 @@ void robotSetup(void)
 	uartOutputString("\r\n**************\r\n");
 	uartOutputString("ROBOT POSITION\r\n");
 	
-	//delay_ms(2500);		//Prevents robot from running away immediately
+	delay_ms(2500);		//Prevents robot from running away immediately
 }
 
 /*
