@@ -14,8 +14,6 @@
 *
 * Functions:
 * void motorInit(void);
-* void motorLeftDrive(int16_t speed);
-* void motorRightDrive(int16_t speed);
 * void motorStop(void);
 * uint8_t moveRobot(float speed, float turnRatio);
 * int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses);
@@ -48,40 +46,6 @@
 *
 */
 void motorInit(void);
-
-/*
-* Function:
-* void motorLeftDrive(int16_t speed)
-*
-* Drives the left motor at the given speed and direction
-*
-* Inputs:
-* int16_t speed:
-*	An integer between -1023 and 1023 that indicates the PWM speed to drive the motor at (1023 is
-*	maximum). A negative number drives the motor in reverse.
-*
-* Returns:
-* none
-*
-*/
-void motorLeftDrive(int16_t speed);
-
-/*
-* Function:
-* void motorRightDrive(int16_t speed)
-*
-* Drives the right motor at the given speed and direction
-*
-* Inputs:
-* int16_t speed:
-*	An integer between -1023 and 1023 that indicates the PWM speed to drive the motor at (1023 is
-*	maximum). A negative number drives the motor in reverse.
-*
-* Returns:
-* none
-*
-*/
-void motorRightDrive(int16_t speed);
 
 /*
 * Function:

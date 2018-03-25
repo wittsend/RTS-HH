@@ -54,8 +54,8 @@ RobotGlobalData sys =
 	},
 	
 	//PID calculation interval (ms)
-	.pidCalcInterval	= 100,
-	.pidNextCalcTime	= 0,
+	.pidUpdateInterval	= 100,
+	.pidNextPIDUpdate	= 0,
 	
 	//System time stamp.
 	.timeStamp			= 0

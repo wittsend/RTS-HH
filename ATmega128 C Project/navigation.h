@@ -6,7 +6,7 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* Header file for the navigation functions module.
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -14,6 +14,11 @@
 *
 * Functions:
 * void nfUpdateNavigationData(RobotGlobalData *sys);
+* float nfWrapAngle(float angleDeg);
+* float nfWrapAngleRad(float angleRad)
+* float nfDeg2Rad(float deg)
+* float nfRad2Deg(float rad)
+* void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance)
 *
 */
 
@@ -26,7 +31,7 @@
 
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
 
-//////////////[Functions]///////////////////////////////////////////////////////////////////////////
+//////////////[Public Functions]////////////////////////////////////////////////////////////////////
 /*
 * Function:
 * void nfUpdateNavigationData(RobotGlobalData *sys)
@@ -42,23 +47,6 @@
 *
 */
 void nfUpdateNavigationData(RobotGlobalData *sys);
-
-/*
-* Function:
-* float nfGetDistTravelled(int8_t pulses)
-*
-* Will return the distance a wheel has traveled based on how many pulses have occurred. Distance
-* constants are set in the defines in the motor_driver module
-*
-* Inputs:
-* int8_t pulses
-*	How many pulses to calculate the distance for
-*
-* Returns:
-* A float containing the distance in metres
-*
-*/
-float nfGetDistTravelled(int8_t pulses);
 
 /*
 * Function:
