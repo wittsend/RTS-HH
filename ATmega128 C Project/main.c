@@ -21,46 +21,59 @@
 #include "robot_setup.h"
 #include "motor_driver.h"
 #include "navigation.h"
+#include "pid_functions.h"
 #include <math.h>			//M_PI
 #include <stdlib.h>			//abs()
 
 //////////////[Defines]/////////////////////////////////////////////////////////////////////////////
-#define MF_HEADING_ERR	0.008727
-#define RTH_KP			250.
-#define RTH_KD			245
+#define PID_UPDATE_RATE	100
 
 //////////////[Private Global Variables]///////////////////////////////////////////////////////////
 extern RobotGlobalData sys;
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
-float mfRotateToHeading(float heading, RobotGlobalData *sys);
+float pidRotateToHeading(float heading, RobotGlobalData *sys);
 
 int main(void)
 {
+	static uint32_t nextPIDUpdate = PID_UPDATE_RATE;
 	robotSetup(); // initialise ATmega128
+	uint8_t moveState = 1;
 	
-	uint32_t nextPIDUpdate = 100;
-	
+	//char debugString()
 	while (1) // loop forever
 	{
 		switch(sys.state.main)
 		{
 			case M_IDLE:
 				//Do nothing state
-				//moveRobot(1023., -1023.);
 				motorStop();
 				break;
 				
 			case M_GO_TO_POS:
-				if(sys.timeStamp > nextPIDUpdate)
+				if(sys.timeStamp >= nextPIDUpdate)
 				{
-					nextPIDUpdate = sys.timeStamp + 100;
-					if(mfRotateToHeading(M_PI_2, &sys) == 0.) sys.state.main = M_IDLE;
+					nextPIDUpdate = sys.timeStamp + PID_UPDATE_RATE;
+					switch(moveState)
+					{						
+						case 1:
+							if(!pidGoToPosition(1023, 1, 0, &sys)) moveState = 2;
+							break;
+						
+						case 2:
+							if(!pidGoToPosition(1023, 1, 1, &sys)) moveState = 3;
+							break;
+
+						case 3:
+							if(!pidGoToPosition(1023, 0, 1, &sys)) moveState = 4;
+							break;
+
+						case 4:
+							if(!pidGoToPosition(1023, 0, 0, &sys)) sys.state.main = M_IDLE;
+							break;
+					}
+					break;
 				}
-				
-				//moveRobot(-256, 1023);
-				//sys.state.main = M_IDLE;
-				break;
 		}
 		
 		nfUpdateNavigationData(&sys);
@@ -68,54 +81,13 @@ int main(void)
 }
 
 
-float mfRotateToHeading(float heading, RobotGlobalData *sys)
-{
-	static float pErr;				//Proportional (signed) error
-	static float pErrOld;			//Old proportional Error
-	static uint32_t timeOld = 0;	//Time of the last update
-	
-	float dErr;
-	float dTime;
-	float motorSpeed;				//Stores motorSpeed calculated by PID sum
-	
-	//Make sure heading is in range (-180 to 180)
-	heading = nfWrapAngleRad(heading);
-	
-	//Calculate proportional error values
-	pErr = heading - sys->pos.heading;				//Signed Error
-	
-	dErr = pErr - pErrOld;
-	
-	pErrOld = pErr;
-	
-	dTime = sys->timeStamp - dTime;
-	timeOld = sys->timeStamp;
-	
-	//Force the P controller to always take the shortest path to the destination.
-	//For example if the robot was currently facing at -120 degrees and the target was 130 degrees,
-	//instead of going right around from -120 to 130, it will go to -180 and down to 130.
-	if(pErr > M_PI)
-		pErr -= (2*M_PI);
-	if(pErr < (-1*M_PI))
-		pErr += (2*M_PI);
-	
-	//If motorSpeed ends up being out of range, then dial it back
-	motorSpeed = (RTH_KP*pErr + RTH_KD*dErr);
-	motorSpeed = capToRangeFlt(motorSpeed, -1023, 1023);
 
-	//If error is less than 0.5 deg and delta yaw is less than 0.5 degrees per second then we can
-	//stop
-	if((fabs(pErr) < MF_HEADING_ERR))
-	{
-		motorStop();
-		pErr = 0;			//Clear the static vars so they don't interfere next time we call this
-							//function
-		pErrOld	= 0;
-		return 0;
-	} else {
-		moveRobot(motorSpeed, 1023.);
-		return pErr;	//If not, return pErr
-	}
-}
-
+					//if(!pidRotateToHeading(nfDeg2Rad(180), &sys)) sys.state.main = M_IDLE;
+					//pidDriveToHeading(1023., nfDeg2Rad(0), &sys);
+					//if(sys.timeStamp > 8000) sys.state.main = M_IDLE;	//Timeout after 8 seconds
+					
+					//moveRobot(1023, -400);
+					
+					//sys.state.main = M_IDLE;
+					//motorStop();
 

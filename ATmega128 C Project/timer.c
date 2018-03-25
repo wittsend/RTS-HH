@@ -33,7 +33,7 @@
 #define TIMER3_COMPC	0x00				//Normal
 #define TIMER3_FOCA		0x00				//Not used
 #define TIMER3_FOCB		0x00				//Not used
-#define TIMER3_WGM		0x02				//Mode 2 CTC
+#define TIMER3_WGM		0x04				//Mode 4 CTC
 #define TIMER3_CLKSEL	0x03				//div by 64
 #define TIMER3_OCR0A	125					//Compare every 125 counts (1ms)
 #define TIMER3_OCR0B	0x00				//Not used
@@ -73,7 +73,7 @@ void timer3Init(void)
 	TCCR3B
 	=	((TIMER3_FOCA & 0x01) << 7)
 	|	((TIMER3_FOCB & 0x01) << 6)
-	|	((TIMER3_WGM & 0x04) << 1)
+	|	((TIMER3_WGM & 0x0C) << 1)
 	|	((TIMER3_CLKSEL & 0x07) << 0);
 	
 	ETIMSK

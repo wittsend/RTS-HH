@@ -13,7 +13,9 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void robotSetup(void);
+* int32_t capToRangeInt(int32_t valueToCap, int32_t minimumVal, int32_t maximumVal)
+* float capToRangeFlt(float valueToCap, float minimumVal, float maximumVal)
 *
 */
 
@@ -51,8 +53,12 @@ RobotGlobalData sys =
 		.rightTotal		= 0
 	},
 	
+	//PID calculation interval (ms)
+	.pidCalcInterval	= 100,
+	.pidNextCalcTime	= 0,
+	
 	//System time stamp.
-	.timeStamp		= 0
+	.timeStamp			= 0
 };
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
@@ -82,7 +88,7 @@ void robotSetup(void)
 	uartOutputString("\r\n**************\r\n");
 	uartOutputString("ROBOT POSITION\r\n");
 	
-	//delay_ms(2500);		//Prevents robot from running away immediately
+	delay_ms(2500);		//Prevents robot from running away immediately
 }
 
 /*

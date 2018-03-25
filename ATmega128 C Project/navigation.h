@@ -92,4 +92,58 @@ float nfWrapAngle(float angleDeg);
 */
 float nfWrapAngleRad(float angleRad);
 
+/*
+* Function:
+* float nfDeg2Rad(float deg)
+*
+* Converts an angle from degrees to radians
+*
+* Inputs:
+* float deg
+*   Angle to convert (in degrees)
+*
+* Returns:
+* The equivalent angle in radians
+*
+*/
+float nfDeg2Rad(float deg);
+
+/*
+* Function:
+* float nfRad2Deg(float rad)
+*
+* Converts an angle from radians to degrees
+*
+* Inputs:
+* float rad
+*   Angle to convert (in radians)
+*
+* Returns:
+* The equivalent angle in degrees
+*
+*/
+float nfRad2Deg(float rad);
+
+/*
+* Function:
+* void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance)
+*
+* Calculates the distance and heading between two points in space (m)
+*
+* Inputs:
+* float x1, y1:
+*	The cordinates of the first point
+* float x2, y2:
+*	The coordinates of the second point
+* float *heading:
+*	A pointer where the relative heading between the two points will be returned to
+* float *distance:
+*	A pointer where the distance will be returned.
+*
+* Returns:
+* none
+*
+*/
+void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance);
+
 #endif /* NAVIGATION_H_ */

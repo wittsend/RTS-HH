@@ -29,10 +29,12 @@
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
 //Robot dimensions
 #define TRACK_WIDTH			0.10640		//Track width of robots wheels (m)
-#define TRACK_WIDTH_H		0.0532		//Half track width (m)
-#define TRACK_WIDTH_P		14.9564		//Track width in pulses
-#define PULSE_DIST			0.007114	//Distance travelled in one encoder pulse (m)
-#define PULSE_ANG			0.06686		//Angle rotated in one pulse (PULSE_DIST/TRACK_WIDTH) (rad)
+//#define TRACK_WIDTH_H		0.0532		//Half track width (m)
+#define TRACK_WIDTH_H		(TRACK_WIDTH/2)//Half track width (m)
+#define PULSE_DIST			0.007514	//Distance travelled in one encoder pulse (m)
+//#define PULSE_ANG			0.06780		//Angle rotated in one pulse (PULSE_DIST/TRACK_WIDTH) (rad)
+#define PULSE_ANG			(PULSE_DIST/TRACK_WIDTH)//Angle rotated in one pulse 
+													//(PULSE_DIST/TRACK_WIDTH) (rad)
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 
@@ -68,7 +70,7 @@ void nfCalcPosition(RobotGlobalData *sys)
 		r	= (TRACK_WIDTH_H*(sys->pos.rightPulses + sys->pos.leftPulses))
 			/(float)(sys->pos.rightPulses - sys->pos.leftPulses);
 		dx	= r*(sin(sys->pos.heading + dTheta) - sin(sys->pos.heading));
-		dy	= r*(cos(sys->pos.heading) - cos(sys->pos.heading - dTheta));
+		dy	= r*(cos(sys->pos.heading) - cos(sys->pos.heading + dTheta));
 	} else {
 		dx	= PULSE_DIST*sys->pos.rightPulses*cos(sys->pos.heading);
 		dy	= PULSE_DIST*sys->pos.rightPulses*sin(sys->pos.heading);
@@ -89,6 +91,7 @@ void nfCalcPosition(RobotGlobalData *sys)
 	sprintf(str, "POS,%6.3f,%6.3f,%6.1f,%1d,%1d,%4d,%4d,%4i\r\n",
 		sys->pos.x, sys->pos.y, sys->pos.heading * 180. / M_PI,	sys->pos.leftPulses,
 		sys->pos.rightPulses, sys->pos.leftTotal, sys->pos.rightTotal, sys->timeStamp);
+	
 	uartOutputString(str);	
 }
 
@@ -187,4 +190,71 @@ float nfWrapAngleRad(float angleRad)
 	while(angleRad < (-1*M_PI))
 		angleRad += (2*M_PI);
 	return angleRad;
+}
+
+/*
+* Function:
+* float nfDeg2Rad(float deg)
+*
+* Converts an angle from degrees to radians
+*
+* Inputs:
+* float deg
+*   Angle to convert (in degrees)
+*
+* Returns:
+* The equivalent angle in radians
+*
+*/
+float nfDeg2Rad(float deg)
+{
+	return deg*M_PI/180.;
+}
+
+/*
+* Function:
+* float nfRad2Deg(float rad)
+*
+* Converts an angle from radians to degrees
+*
+* Inputs:
+* float rad
+*   Angle to convert (in radians)
+*
+* Returns:
+* The equivalent angle in degrees
+*
+*/
+float nfRad2Deg(float rad)
+{
+	return rad*180./M_PI;
+}
+
+/*
+* Function:
+* void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance)
+*
+* Calculates the distance and heading between two points in space (m)
+*
+* Inputs:
+* float x1, y1:
+*	The cordinates of the first point
+* float x2, y2:
+*	The coordinates of the second point
+* float *heading:
+*	A pointer where the relative heading between the two points will be returned to
+* float *distance:
+*	A pointer where the distance will be returned.
+*
+* Returns:
+* none
+*
+*/
+void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance)
+{
+	float diffX = (x2 - x1);
+	float diffY = (y2 - y1);
+	*distance = sqrt(diffX*diffX + diffY*diffY);
+	
+	*heading = nfWrapAngleRad(atan2(diffY, diffX));
 }

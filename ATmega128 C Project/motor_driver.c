@@ -27,6 +27,7 @@
 #include "robot_setup.h"
 #include <avr/interrupt.h>
 #include <stdlib.h>							//abs()
+#include <math.h>							//fabs()
 #include "motor_driver.h"
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
@@ -136,7 +137,7 @@ void motorInit(void)
 	|	(TIMER1_WGM & 0x03);
 	
 	TCCR1B
-	|=	((TIMER1_WGM & 0x0C)<<3)
+	|=	((TIMER1_WGM & 0x0C)<<1)
 	|	(TIMER1_CS);
 	
 	motorLeftSpeed = 0;
@@ -263,12 +264,18 @@ uint8_t moveRobot(float speed, float turnRatio)
 	turnRatio = capToRangeFlt(turnRatio, -1023, 1023);
 	
 	//Calculate speed ratios. Positive turn ratio will see robot veer to the right
-	float rotationalSpeed = speed*(turnRatio/1023.0);
-	float straightSpeed = speed - rotationalSpeed;
+	float rotationalSpeed = fabs(speed)*(turnRatio/1023.0);
+	float straightSpeed = fabs(speed) - fabs(rotationalSpeed);
 	
 	//Calculate individual motor speeds
-	rightMotorSpeed		= (int16_t)(straightSpeed + rotationalSpeed);
-	leftMotorSpeed		= (int16_t)(straightSpeed - rotationalSpeed);
+	if(speed > 0)
+	{
+		rightMotorSpeed		= (int16_t)(straightSpeed + rotationalSpeed);
+		leftMotorSpeed		= (int16_t)(straightSpeed - rotationalSpeed);
+	} else {
+		rightMotorSpeed		= (int16_t)(-straightSpeed - rotationalSpeed);
+		leftMotorSpeed		= (int16_t)(-straightSpeed + rotationalSpeed);		
+	}
 	
 	//Apply speeds and directions to motors
 	motorRightDrive(rightMotorSpeed);
