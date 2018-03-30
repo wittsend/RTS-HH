@@ -25,7 +25,7 @@
 
 //////////////[Defines]/////////////////////////////////////////////////////////////////////////////
 
-//////////////[Private Global Variables]///////////////////////////////////////////////////////////
+//////////////[Private Global Variables]////////////////////////////////////////////////////////////
 extern RobotGlobalData sys;
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
@@ -58,15 +58,16 @@ int main(void)
 					switch(moveState)
 					{						
 						case 1:
-							if(!pidGoToPosition(1023, 1, 0, &sys)) moveState = 2;
+							if(!pidGoToPosition(1023, 0.6, 0, &sys)) moveState = 2;
 							break;
 						
 						case 2:
-							if(!pidGoToPosition(1023, 1, 1, &sys)) moveState = 3;
+							if(!pidGoToPosition(1023, 0	, 0, &sys)) moveState = 3;
 							break;
 
 						case 3:
-							if(!pidGoToPosition(1023, 0, 1, &sys)) moveState = 4;
+							//if(!pidGoToPosition(1023, 0, 0.6, &sys)) moveState = 4;
+							sys.state.main = M_IDLE;
 							break;
 
 						case 4:
