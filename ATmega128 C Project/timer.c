@@ -28,22 +28,27 @@
 #include "timer.h"
 
 //////////////[Defines]/////////////////////////////////////////////////////////////////////////////
-#define TIMER3_COMPA	0x00				//Normal
-#define TIMER3_COMPB	0x00				//Normal
-#define TIMER3_COMPC	0x00				//Normal
-#define TIMER3_FOCA		0x00				//Not used
-#define TIMER3_FOCB		0x00				//Not used
-#define TIMER3_WGM		0x04				//Mode 4 CTC
-#define TIMER3_CLKSEL	0x03				//div by 64
-#define TIMER3_OCR0A	125					//Compare every 125 counts (1ms)
-#define TIMER3_OCR0B	0x00				//Not used
-#define TIMER3_OCAIE	0x01				//Output compare interrupt enabled
-#define TIMER3_OCBIE	0x00				//Not used
-#define TIMER3_OVIE		0x00				//Not used
+//Timer3 Settings
+#define TIMER3_COMPA	0x00					//Normal
+#define TIMER3_COMPB	0x00					//Normal
+#define TIMER3_COMPC	0x00					//Normal
+#define TIMER3_FOCA		0x00					//Not used
+#define TIMER3_FOCB		0x00					//Not used
+#define TIMER3_WGM		0x04					//Mode 4 CTC
+#define TIMER3_CLKSEL	0x03					//div by 64
+#define TIMER3_OCR0A	125						//Compare every 125 counts (1ms)
+#define TIMER3_OCR0B	0x00					//Not used
+#define TIMER3_OCAIE	0x01					//Output compare interrupt enabled
+#define TIMER3_OCBIE	0x00					//Not used
+#define TIMER3_OVIE		0x00					//Not used
+
+//Macros
+#define disableInterrupt (ETIMSK &= ~(1<<OCIE3A));	//Disable COMPA interrupt
+#define enableInterrupt	(ETIMSK |= (1<<OCIE3A));	//Enable COMPA interrupt
 
 ///////////////[Private Global Vars]////////////////////////////////////////////////////////////////
-volatile uint32_t systemTimestamp = 0;		//Global timestamp (ms)
-volatile uint16_t delaymsCounter = 0;		//Used by delay_ms()
+static volatile uint32_t systemTimestamp = 0;		//Global timestamp (ms)
+static volatile uint16_t delaymsCounter = 0;		//Used by delay_ms()
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
@@ -167,23 +172,22 @@ uint8_t nbdelay_ms(uint16_t period_ms)
 * Outputs the system uptime generated from Timer 3.
 *
 * Inputs:
-* address of an integer where the timestamp will be stored
+* none
 *
 * Returns:
-* function will return 1 if invalid pointer is passed, otherwise a 0 on success
+* The current system timestamp in milliseconds.
 *
 * Implementation:
-* Retrieves the value stored in sys.timeStamp (stores the number of millisecs that have elapsed
-* since power on) and drops it at the address given by *timestamp. if *timestamp is an invalid
-* address then returns a 1.
+* Disable the timer compare interrupt, then retrieve the millisecond value stored in 
+* systemTimestamp. Finally, enable the timer interrupt again and return the time stamp value.
 *
 */
-int get_ms(uint32_t *timestamp)
+uint32_t get_ms()
 {
-	if(!timestamp)
-		return 1;
-	*timestamp = systemTimestamp;
-	return 0;
+	disableInterrupt;
+	uint32_t timeStamp = systemTimestamp;
+	enableInterrupt;
+	return timeStamp;
 }
 
 /*

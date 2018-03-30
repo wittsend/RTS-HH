@@ -24,8 +24,7 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-///////////////[Global Vars]////////////////////////////////////////////////////////////////////////
-extern volatile uint32_t systemTimestamp;	//Timestamp that stores the number of ms since powerup.
+//////////////[Global Vars]/////////////////////////////////////////////////////////////////////////
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
@@ -81,12 +80,16 @@ uint8_t nbdelay_ms(uint16_t period_ms);
 * Outputs the system uptime generated from Timer 3.
 *
 * Inputs:
-* address of an integer where the timestamp will be stored
+* none
 *
 * Returns:
-* function will return 1 if invalid pointer is passed, otherwise a 0 on success
+* The current system timestamp in milliseconds.
+*
+* Implementation:
+* Disable the timer compare interrupt, then retrieve the millisecond value stored in
+* systemTimestamp. Finally, enable the timer interrupt again and return the time stamp value.
 *
 */
-int get_ms(uint32_t *timestamp);
+uint32_t get_ms();
 
 #endif /* TIMER_H_ */

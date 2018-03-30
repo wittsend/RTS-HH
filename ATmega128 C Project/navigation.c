@@ -125,7 +125,7 @@ void nfUpdateNavigationData(RobotGlobalData *sys)
 {
 	//Update the system time stamp from the timer driver module. This provides a level of
 	//abstraction from the hardware drivers.
-	sys->timeStamp = systemTimestamp;
+	sys->timeStamp = get_ms();
 	
 	//Get the wheel encoder pulse counts from the motor driver module (if any)
 	getEncPulses(&sys->pos.leftPulses, &sys->pos.rightPulses);

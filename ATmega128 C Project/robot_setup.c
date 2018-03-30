@@ -6,7 +6,8 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* This file sets up the robot's hardware and provides general functions that don't belong in one
+* module or another.
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -26,7 +27,7 @@
 #include "timer.h"
 #include "uart_driver.h"
 
-#include <avr/interrupt.h>
+#include <avr/interrupt.h>	//Allows the initialisation routine to enable global interrupts.
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
 
