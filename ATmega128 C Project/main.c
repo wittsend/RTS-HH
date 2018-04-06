@@ -29,8 +29,6 @@
 extern RobotGlobalData sys;
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
-float pidRotateToHeading(float heading, RobotGlobalData *sys);
-
 int main(void)
 {
 	robotSetup(); // initialise ATmega128

@@ -110,10 +110,8 @@ static void motorLeftDrive(int16_t speed)
 {
 	speed = capToRangeInt(speed, -1023, 1023);	//Make sure speed is in range
 	motorLeftSpeed = abs(speed);
-	if(speed > 0)		//Forwards
-	motorLeftFwd;
-	if(speed < 0)		//Reverse
-	motorLeftRev;
+	if(speed > 0) motorLeftFwd;					//Forwards
+	if(speed < 0) motorLeftRev;					//Reverse
 }
 
 /*
@@ -136,10 +134,8 @@ static void motorRightDrive(int16_t speed)
 {
 	speed = capToRangeInt(speed, -1023, 1023);	//Make sure speed is in range
 	motorRightSpeed = abs(speed);
-	if(speed > 0)		//Forwards
-	motorRightFwd;
-	if(speed < 0)		//Reverse
-	motorRightRev;
+	if(speed > 0) motorRightFwd;				//Forwards
+	if(speed < 0) motorRightRev;				//Reverse
 }
 
 /*
@@ -158,10 +154,8 @@ static void motorRightDrive(int16_t speed)
 ISR(ENCODER_LEFT_ISR_VECT)
 {
 	//If motor is being driven backwards
-	if(motorLeftDir)
-	leftPulseCount--;
-	else
-	leftPulseCount++;
+	if(motorLeftDir) leftPulseCount--;
+	else leftPulseCount++;
 }
 
 /*
@@ -180,10 +174,8 @@ ISR(ENCODER_LEFT_ISR_VECT)
 ISR(ENCODER_RIGHT_ISR_VECT)
 {
 	//If motor is being driven backwards
-	if(motorRightDir)
-	rightPulseCount--;
-	else
-	rightPulseCount++;
+	if(motorRightDir) rightPulseCount--;
+	else rightPulseCount++;
 }
 
 //////////////[Public Functions]////////////////////////////////////////////////////////////////////
@@ -316,6 +308,8 @@ uint8_t moveRobot(float speed, float turnRatio)
 	float straightSpeed = fabs(speed) - fabs(rotationalSpeed);
 	
 	//Calculate individual motor speeds
+	//If statement ensures there is always a value between 0 and 1023 for the motor speeds no matter
+	//the signs of speed and turnRatio 
 	if(speed > 0)
 	{
 		rightMotorSpeed		= (int16_t)(straightSpeed + rotationalSpeed);
