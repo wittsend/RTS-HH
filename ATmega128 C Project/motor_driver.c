@@ -13,9 +13,10 @@
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
+* static void motorLeftDrive(int16_t speed);
+* static void motorRightDrive(int16_t speed);
+*
 * void motorInit(void);
-* void motorLeftDrive(int16_t speed);
-* void motorRightDrive(int16_t speed);
 * void motorStop(void);
 * uint8_t moveRobot(float speed, float turnRatio);
 * int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses);
@@ -88,7 +89,96 @@
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 volatile int8_t leftPulseCount, rightPulseCount; // wheel pulse counts
 
-//////////////[Functions]///////////////////////////////////////////////////////////////////////////
+//////////////[Private Functions]///////////////////////////////////////////////////////////////////
+/*
+* Function:
+* void motorLeftDrive(int16_t speed)
+*
+* Drives the left motor at the given speed and direction. This function is not accessible outside
+* of the motor driver as the motors should be controlled by moveRobot.
+*
+* Inputs:
+* int16_t speed:
+*	An integer between -1023 and 1023 that indicates the PWM speed to drive the motor at (1023 is
+*	maximum). A negative number drives the motor in reverse.
+*
+* Returns:
+* none
+*
+*/
+static void motorLeftDrive(int16_t speed)
+{
+	speed = capToRangeInt(speed, -1023, 1023);	//Make sure speed is in range
+	motorLeftSpeed = abs(speed);
+	if(speed > 0) motorLeftFwd;					//Forwards
+	if(speed < 0) motorLeftRev;					//Reverse
+}
+
+/*
+* Function:
+* void motorRightDrive(int16_t speed)
+*
+* Drives the right motor at the given speed and direction. This function is not accessible outside
+* of the motor driver as the motors should be controlled by moveRobot.
+*
+* Inputs:
+* int16_t speed:
+*	An integer between -1023 and 1023 that indicates the PWM speed to drive the motor at (1023 is
+*	maximum). A negative number drives the motor in reverse.
+*
+* Returns:
+* none
+*
+*/
+static void motorRightDrive(int16_t speed)
+{
+	speed = capToRangeInt(speed, -1023, 1023);	//Make sure speed is in range
+	motorRightSpeed = abs(speed);
+	if(speed > 0) motorRightFwd;				//Forwards
+	if(speed < 0) motorRightRev;				//Reverse
+}
+
+/*
+* Function:
+* ISR(ENCODER_LEFT_ISR_VECT)
+*
+* Interrupt service routine for left wheel pulse counter
+*
+* Inputs:
+* none
+*
+* Returns:
+* none
+*
+*/
+ISR(ENCODER_LEFT_ISR_VECT)
+{
+	//If motor is being driven backwards
+	if(motorLeftDir) leftPulseCount--;
+	else leftPulseCount++;
+}
+
+/*
+* Function:
+* ISR(ENCODER_RIGHT_ISR_VECT)
+*
+* Interrupt service routine for right wheel pulse counter
+*
+* Inputs:
+* none
+*
+* Returns:
+* none
+*
+*/
+ISR(ENCODER_RIGHT_ISR_VECT)
+{
+	//If motor is being driven backwards
+	if(motorRightDir) rightPulseCount--;
+	else rightPulseCount++;
+}
+
+//////////////[Public Functions]////////////////////////////////////////////////////////////////////
 /*
 * Function: 
 * void motorInit(void)
@@ -161,56 +251,6 @@ void motorInit(void)
 
 /*
 * Function:
-* void motorLeftDrive(int16_t speed)
-*
-* Drives the left motor at the given speed and direction
-*
-* Inputs:
-* int16_t speed:
-*	An integer between -1023 and 1023 that indicates the PWM speed to drive the motor at (1023 is
-*	maximum). A negative number drives the motor in reverse.
-*
-* Returns:
-* none
-*
-*/
-void motorLeftDrive(int16_t speed)
-{
-	speed = capToRangeInt(speed, -1023, 1023);	//Make sure speed is in range
-	motorLeftSpeed = abs(speed);
-	if(speed > 0)		//Forwards
-		motorLeftFwd;
-	if(speed < 0)		//Reverse
-		motorLeftRev;
-}
-
-/*
-* Function:
-* void motorRightDrive(int16_t speed)
-*
-* Drives the right motor at the given speed and direction
-*
-* Inputs:
-* int16_t speed:
-*	An integer between -1023 and 1023 that indicates the PWM speed to drive the motor at (1023 is
-*	maximum). A negative number drives the motor in reverse.
-*
-* Returns:
-* none
-*
-*/
-void motorRightDrive(int16_t speed)
-{
-	speed = capToRangeInt(speed, -1023, 1023);	//Make sure speed is in range
-	motorRightSpeed = abs(speed);
-	if(speed > 0)		//Forwards
-		motorRightFwd;
-	if(speed < 0)		//Reverse
-		motorRightRev;
-}
-
-/*
-* Function:
 * motorStop(void)
 *
 * Stops all motors
@@ -268,6 +308,8 @@ uint8_t moveRobot(float speed, float turnRatio)
 	float straightSpeed = fabs(speed) - fabs(rotationalSpeed);
 	
 	//Calculate individual motor speeds
+	//If statement ensures there is always a value between 0 and 1023 for the motor speeds no matter
+	//the signs of speed and turnRatio 
 	if(speed > 0)
 	{
 		rightMotorSpeed		= (int16_t)(straightSpeed + rotationalSpeed);
@@ -312,48 +354,4 @@ int8_t getEncPulses(int8_t *leftPulses, int8_t *rightPulses)
 	rightPulseCount = 0;					//Clear the pulse counts
 	encoderEnableInterrupts;				//Re-enable the external interrupts.
 	return 0;
-}
-
-/*
-* Function:
-* ISR(ENCODER_LEFT_ISR_VECT)
-*
-* Interrupt service routine for left wheel pulse counter 
-*
-* Inputs:
-* none
-*
-* Returns:
-* none
-*
-*/
-ISR(ENCODER_LEFT_ISR_VECT)
-{
-	//If motor is being driven backwards
-	if(motorLeftDir)
-		leftPulseCount--;
-	else
-		leftPulseCount++;
-}
-
-/*
-* Function:
-* ISR(ENCODER_RIGHT_ISR_VECT)
-*
-* Interrupt service routine for right wheel pulse counter
-*
-* Inputs:
-* none
-*
-* Returns:
-* none
-*
-*/
-ISR(ENCODER_RIGHT_ISR_VECT)
-{
-	//If motor is being driven backwards
-	if(motorRightDir)
-		rightPulseCount--;
-	else
-		rightPulseCount++;
 }

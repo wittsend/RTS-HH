@@ -6,14 +6,24 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* This module retrieves raw navigation data from the motor driver and calculates the position of 
+* the robot. Additionally, it retrieves and stored the system timestamp from the timer module and
+* stores it in the Robot Global Structure, and it also provides functions for converting and working
+* with angles.
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
+* static void nfCalcPosition(RobotGlobalData *sys)
+*
 * void nfUpdateNavigationData(RobotGlobalData *sys);
+* float nfWrapAngle(float angleDeg);
+* float nfWrapAngleRad(float angleRad);
+* float nfDeg2Rad(float deg)
+* float nfRad2Deg(float rad)
+* void nfGetDist(float x1, float y1, float x2, float y2, float *heading, float *distance)
 *
 */
 
@@ -38,7 +48,7 @@
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 
-//////////////[Functions]///////////////////////////////////////////////////////////////////////////
+//////////////[Private Functions]///////////////////////////////////////////////////////////////////
 /*
 * Function:
 * void nfCalcPosition(RobotGlobalData *sys)
@@ -54,7 +64,7 @@
 * none
 *
 */
-void nfCalcPosition(RobotGlobalData *sys)
+static void nfCalcPosition(RobotGlobalData *sys)
 {
 	float dTheta = 0;				//delta angle of each wheel in radians
 	float r = 0, dx = 0, dy = 0;
@@ -89,12 +99,14 @@ void nfCalcPosition(RobotGlobalData *sys)
 	// display the new position (convert heading to degrees)
 	char str[100]; // serial output string
 	sprintf(str, "POS,%6.3f,%6.3f,%6.1f,%1d,%1d,%4d,%4d,%4i\r\n",
-		sys->pos.x, sys->pos.y, sys->pos.heading * 180. / M_PI,	sys->pos.leftPulses,
-		sys->pos.rightPulses, sys->pos.leftTotal, sys->pos.rightTotal, sys->timeStamp);
+		sys->pos.x, sys->pos.y, nfRad2Deg(sys->pos.heading),	sys->pos.leftPulses,
+		sys->pos.rightPulses, sys->pos.leftTotal, sys->pos.rightTotal, (unsigned int)
+		sys->timeStamp);
 	
 	uartOutputString(str);	
 }
 
+//////////////[Public Functions]////////////////////////////////////////////////////////////////////
 /*
 * Function: 
 * void nfUpdateNavigationData(RobotGlobalData *sys)
@@ -113,9 +125,9 @@ void nfUpdateNavigationData(RobotGlobalData *sys)
 {
 	//Update the system time stamp from the timer driver module. This provides a level of
 	//abstraction from the hardware drivers.
-	sys->timeStamp = systemTimestamp;
+	sys->timeStamp = get_ms();
 	
-	//Get the wheel encoder pulse counts from the motor driver module
+	//Get the wheel encoder pulse counts from the motor driver module (if any)
 	getEncPulses(&sys->pos.leftPulses, &sys->pos.rightPulses);
 	
 	//If movement has occurred, re-calculate position
@@ -123,27 +135,7 @@ void nfUpdateNavigationData(RobotGlobalData *sys)
 	{
 		//Calculate position of robot.
 		nfCalcPosition(sys);
-	}
-}
-
-/*
-* Function:
-* float nfGetDistTravelled(int8_t pulses)
-*
-* Will return the distance a wheel has traveled based on how many pulses have occurred. Distance
-* constants are set in the defines in the motor_driver module
-*
-* Inputs:
-* int8_t pulses
-*	How many pulses to calculate the distance for
-*
-* Returns:
-* A float containing the distance in metres
-*
-*/
-float nfGetDistTravelled(int8_t pulses)
-{
-	return pulses*PULSE_DIST;
+	}		
 }
 
 /*

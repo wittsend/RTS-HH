@@ -72,11 +72,11 @@ float pidRotateToHeading(float heading, RobotGlobalData *sys)
 	//Set up variables
 	float pErr;						//Proportional (signed) error
 	static float pErrOld = 0;		//Old proportional Error
-	static float iErr = 0;			//Integral Error_
+	static float iErr = 0;			//Integral Error
 	float dErr;						//Derivative error
 	float motorSpeed;				//Stores motorSpeed calculated by PID sum
-	static int16_t successCount = 0;//This number should be over a certian threshold to exit this 
-									//function
+	static int16_t successCount = 0;//This number should be over a certain threshold to exit this 
+									//function. Prevents overshooting.
 	
 	//Make sure heading is in range (-pi to pi)
 	heading = nfWrapAngleRad(heading);
@@ -85,10 +85,8 @@ float pidRotateToHeading(float heading, RobotGlobalData *sys)
 	//Force the P controller to always take the shortest path to the destination.
 	//For example if the robot was currently facing at -120 degrees and the target was 130 degrees,
 	//instead of going right around from -120 to 130, it will go to -180 and down to 130.
-	if(pErr > M_PI)
-		pErr -= (2*M_PI);
-	if(pErr < (-1*M_PI))
-		pErr += (2*M_PI);
+	if(pErr > M_PI)	pErr -= (2*M_PI);
+	if(pErr < (-1*M_PI)) pErr += (2*M_PI);
 	
 	//Calculate proportional error values		
 	iErr += pErr;									//Integral error
@@ -114,8 +112,8 @@ float pidRotateToHeading(float heading, RobotGlobalData *sys)
 			return pErr;
 		} else {
 			motorStop();
-			pErrOld = 0;			//Clear the static vars so they don't interfere next time we call this
-									//function
+			//Clear the static vars so they don't interfere next time we call this function
+			pErrOld = 0;			
 			iErr = 0;
 			successCount = 0;
 			return 0;
@@ -163,10 +161,8 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 	//Force the P controller to always take the shortest path to the destination.
 	//For example if the robot was currently facing at -120 degrees and the target was 130 degrees,
 	//instead of going right around from -120 to 130, it will go to -180 and down to 130.
-	if(pErr > M_PI)
-		pErr -= (2*M_PI);
-	if(pErr < (-1*M_PI))
-		pErr += (2*M_PI);
+	if(pErr > M_PI)	pErr -= (2*M_PI);
+	if(pErr < (-1*M_PI)) pErr += (2*M_PI);
 
 	iErr += pErr;					//Integral error
 	dErr = pErr - pErrOld;			//Derivative error

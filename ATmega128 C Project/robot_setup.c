@@ -6,7 +6,8 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* This file sets up the robot's hardware and provides general functions that don't belong in one
+* module or another.
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -26,7 +27,7 @@
 #include "timer.h"
 #include "uart_driver.h"
 
-#include <avr/interrupt.h>
+#include <avr/interrupt.h>	//Allows the initialisation routine to enable global interrupts.
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
 
@@ -54,8 +55,8 @@ RobotGlobalData sys =
 	},
 	
 	//PID calculation interval (ms)
-	.pidCalcInterval	= 100,
-	.pidNextCalcTime	= 0,
+	.pidUpdateInterval	= 100,
+	.pidNextPIDUpdate	= 0,
 	
 	//System time stamp.
 	.timeStamp			= 0
@@ -119,18 +120,14 @@ void robotSetup(void)
 */
 int32_t capToRangeInt(int32_t valueToCap, int32_t minimumVal, int32_t maximumVal)
 {
-	if(valueToCap > maximumVal)
-		valueToCap = maximumVal;
-	if(valueToCap < minimumVal)
-		valueToCap = minimumVal;
+	if(valueToCap > maximumVal) valueToCap = maximumVal;
+	if(valueToCap < minimumVal)	valueToCap = minimumVal;
 	return valueToCap;
 }
 
 float capToRangeFlt(float valueToCap, float minimumVal, float maximumVal)
 {
-	if(valueToCap > maximumVal)
-		valueToCap = maximumVal;
-	if(valueToCap < minimumVal)
-		valueToCap = minimumVal;
+	if(valueToCap > maximumVal)	valueToCap = maximumVal;
+	if(valueToCap < minimumVal)	valueToCap = minimumVal;
 	return valueToCap;
 }

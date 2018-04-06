@@ -6,7 +6,7 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* Header file for the Robot Setup Module
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -60,8 +60,7 @@ typedef struct PositionData
 	int8_t rightPulses;		//Number of pulses from right wheel
 	int leftTotal;			//Total left pulses
 	int rightTotal;			//Total right pulses
-	//uint8_t pollEnabled;	//Whether or not to poll the navigation data
-	//uint8_t pollInterval;	//The interval at which to poll
+	uint8_t pollEnabled;	//Whether or not to poll the navigation data
 } PositionData;
 
 //The root structure of the global data tree. 
@@ -70,8 +69,8 @@ typedef struct RobotGlobalData
 	StateMachines state;
 	PositionData pos;
 	uint32_t timeStamp;
-	uint16_t pidCalcInterval;	//How often to perform PID calculations
-	uint32_t pidNextCalcTime;	//When to perform the next PID calc
+	uint16_t pidUpdateInterval;	//How often to perform PID calculations
+	uint32_t pidNextPIDUpdate;	//When to perform the next PID calc
 } RobotGlobalData;
 
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
