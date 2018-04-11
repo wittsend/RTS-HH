@@ -100,11 +100,11 @@ void uart0Init(void)
 	#endif
 }
 
-uint8_t uart0GetCmd(char *command)
+uint8_t uart0GetCmd(uint16_t command)
 {
 	if(uartRxCmdRcv)
 	{
-		command = uartCommand;
+		command = (uint16_t)uartCommand;
 		uartRxCmdRcv = 0;
 		return UART_RXBUF_MAX;
 	}

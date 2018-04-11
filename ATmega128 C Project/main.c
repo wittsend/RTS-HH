@@ -22,6 +22,7 @@
 #include "motor_driver.h"
 #include "navigation.h"
 #include "pid_functions.h"
+#include "remote_control.h"
 
 //////////////[Defines]/////////////////////////////////////////////////////////////////////////////
 
@@ -78,6 +79,9 @@ int main(void)
 		
 		//Retrieve encoder data from the wheels and recalculate the robot's position
 		nfUpdateNavigationData(&sys);
+		
+		//Check for command from the PC, and if a new one has been received, then execute:
+		rcExecuteCommand();
 	}
 }
 
