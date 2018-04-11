@@ -20,6 +20,7 @@
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
 #include "robot_setup.h"
 #include <string.h>
+#include <stdio.h>
 
 #include "uart_driver.h"
 #include "remote_control.h"
@@ -45,20 +46,61 @@
 * [Ideas for improvements that are yet to be made](optional)
 *
 */
-void rcExecuteCommand(void)
+void rcExecuteCommand(RobotGlobalData *sys)
 {
-	RemoteCommandData cmd;
-	uint8_t newCmd = rcGetCommand(&cmd)
+	uint8_t newCmd = rcGetCommand(&(sys->rc));
 	return;
 }
 
+
 uint8_t rcGetCommand(RemoteCommandData *pCommand)
 {
-	uint16_t pCmdData;
-	uint8_t newCmd = uart0GetCmd(pCmdData);
+	uint8_t cmdLen = 0;							//Stores the address to the command string
+	const char *pCmdData = uart0GetCmd(&cmdLen);	//See if a new command has been received on the UART
 	
-	//if(newCmd)
-		return pCmdData;
-	//else
-	//	return 0;
+	pCommand->newCmd = 0;
+	
+	if(cmdLen)
+	{
+		uint8_t readError = 0;
+		int n;
+		float f1, f2;
+		char str[50];
+
+		//If we have a GO command
+		if (strncmp(pCmdData, "GO", 2) == 0)
+		{
+			n = sscanf(pCmdData + 3, "%f,%f", &f1, &f2);
+			if (n == 2)							//If two floats have been found.
+			{
+				pCommand->cmd = RC_CMD_GO;
+				pCommand->x = f1;
+				pCommand->y = f2;
+				sprintf(str, "CMD GO %.3f,%.3f\r\n", f1, f2);
+			} else {
+				readError = 1;
+			}
+		}		
+
+		//If we have a STOP command
+		if (strncmp(pCmdData, "STOP", 4) == 0)
+		{
+			pCommand->cmd = RC_CMD_STOP;
+			pCommand->x = 0;
+			pCommand->y = 0;
+			sprintf(str, "CMD STOP\r\n");
+		}
+		
+		if(readError) 
+		{
+			sprintf(str, "CMD ERROR\r\n");
+			pCommand->newCmd = 0;
+		} else {
+			pCommand->newCmd = 1;
+		}
+		
+		uart0OutputString(str);
+	}
+	
+	return pCommand->newCmd;
 }

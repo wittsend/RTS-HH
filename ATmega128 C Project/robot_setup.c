@@ -38,7 +38,7 @@ RobotGlobalData sys =
 	//Robot's FSM initial states are set here
 	.state =
 	{
-		.main = M_GO_TO_POS,
+		.main = M_IDLE,
 		.gtp = GTP_START
 	},
 	
@@ -52,6 +52,15 @@ RobotGlobalData sys =
 		.rightPulses	= 0,
 		.leftTotal		= 0,
 		.rightTotal		= 0
+	},
+	
+	//Initialise remote command structure
+	.rc =
+	{
+		.cmd			= RC_CMD_NONE,
+		.newCmd			= 0,
+		.x				= 0,
+		.y				= 0
 	},
 	
 	//PID calculation interval (ms)

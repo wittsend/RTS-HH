@@ -25,23 +25,10 @@
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
 
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
-//Valid commands enumeration
-typedef enum RemoteControlCommands
-{
-	RC_CMD_GO,
-	RC_CMD_STOP
-} RemoteControlCommands;
 
-//The received command data structure
-typedef struct RemoteCommandData
-{
-	RemoteControlCommands cmd;	//Type of command
-	uint8_t newCmd;				//Whether this is a new command or not
-	float x;					//X parameter of command
-	float y;					//Y parameter of command
-} RemoteCommandData;
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
+void rcExecuteCommand(RobotGlobalData *sys);
 
 uint8_t rcGetCommand(RemoteCommandData *pCommand);
 

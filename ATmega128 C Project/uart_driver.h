@@ -31,7 +31,7 @@ extern volatile unsigned char uartRxCmdRcv;			//Command received flag
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 void uart0Init(void);
-uint8_t uart0GetCmd(uint16_t command);
+char *uart0GetCmd(uint8_t *cmdLen);
 uint8_t uart0OutputString(char* str);
 
 #endif /* UART_DRIVER_H_ */

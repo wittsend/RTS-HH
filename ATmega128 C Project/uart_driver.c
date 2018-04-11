@@ -55,7 +55,7 @@ volatile unsigned int txHead, txTail, txCount;		//buffer (queue) indexes
 volatile char rxBuffer[UART_RXBUF_MAX];				//buffer (queue) data
 volatile unsigned int rxCount;
 volatile unsigned char uartRxCmdRcv = 0;				//Command received flag
-volatile char uartCommand[UART_RXBUF_MAX];			//received command string
+char uartCommand[UART_RXBUF_MAX];					//received command string
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
@@ -100,14 +100,15 @@ void uart0Init(void)
 	#endif
 }
 
-uint8_t uart0GetCmd(uint16_t command)
+char *uart0GetCmd(uint8_t *cmdLen)
 {
 	if(uartRxCmdRcv)
 	{
-		command = (uint16_t)uartCommand;
-		uartRxCmdRcv = 0;
-		return UART_RXBUF_MAX;
+		*cmdLen = UART_RXBUF_MAX;	//Return the length of the receive buffer as a ref param
+		uartRxCmdRcv = 0;			//Reset the command received flag, as this command will be read
+		return uartCommand;			//Return the address to the receive buffer
 	}
+	*cmdLen = 0;
 	return 0;
 }
 
