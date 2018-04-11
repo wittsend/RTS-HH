@@ -103,7 +103,7 @@ static void nfCalcPosition(RobotGlobalData *sys)
 		sys->pos.rightPulses, sys->pos.leftTotal, sys->pos.rightTotal, (unsigned int)
 		sys->timeStamp);
 	
-	uartOutputString(str);	
+	uart0OutputString(str);	
 }
 
 //////////////[Public Functions]////////////////////////////////////////////////////////////////////

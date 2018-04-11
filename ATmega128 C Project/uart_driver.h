@@ -14,7 +14,7 @@
 *
 * Functions:
 * void uart0Init(void);
-* uint8_t uartOutputString(char* str);
+* uint8_t uart0OutputString(char* str);
 *
 */
 
@@ -27,9 +27,11 @@
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
 
 //////////////[External Global Variables]///////////////////////////////////////////////////////////
+extern volatile unsigned char uartRxCmdRcv = 0;			//Command received flag
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 void uart0Init(void);
-uint8_t uartOutputString(char* str);
+uint8_t uart0GetCmd(char *command);
+uint8_t uart0OutputString(char* str);
 
 #endif /* UART_DRIVER_H_ */

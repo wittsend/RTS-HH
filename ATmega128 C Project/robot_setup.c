@@ -86,8 +86,8 @@ void robotSetup(void)
 	sei();				//Globally enable interrupts.
 	
 	// display started on serial port
-	uartOutputString("\r\n**************\r\n");
-	uartOutputString("ROBOT POSITION\r\n");
+	uart0OutputString("\r\n**************\r\n");
+	uart0OutputString("ROBOT POSITION\r\n");
 	
 	delay_ms(2500);		//Prevents robot from running away immediately
 }
