@@ -14,7 +14,7 @@
 *
 * Functions:
 * void uart0Init(void);
-* uint8_t uartOutputString(char* str);
+* uint8_t uart0OutputString(char* str);
 *
 */
 
@@ -26,9 +26,10 @@
 
 //////////////[Private Defines]/////////////////////////////////////////////////////////////////////
 #define UART_USE_INTS	1			//Allow the UART to use interrupts for transmission
-#define UART_BUF_MAX	1024		//serial output buffer size
+#define UART_TXBUF_MAX	1024		//serial output buffer size
+#define UART_RXBUF_MAX	20			//Serial input buffer size
 
-#define UART0_RXCIE		0x00		//Receive complete interrupt enable
+#define UART0_RXCIE		0x01		//Receive complete interrupt enable
 #define UART0_TXCIE		0x00		//Transmit complete interrupt enable
 #define UART0_UDRIE		UART_USE_INTS//Data register empty interrupt enable
 #define UART0_RXEN		0x01		//Receive enable setting
@@ -47,9 +48,14 @@
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 #if UART_USE_INTS == 1
 // serial port 0 transmit buffer
-volatile char buffer[UART_BUF_MAX];			//buffer (queue) data
-volatile unsigned int head, tail, count;	//buffer (queue) indexes
+volatile char txBuffer[UART_TXBUF_MAX];				//buffer (queue) data
+volatile unsigned int txHead, txTail, txCount;		//buffer (queue) indexes
 #endif
+//Serial port 0 Receive buffer
+volatile char rxBuffer[UART_RXBUF_MAX];				//buffer (queue) data
+volatile unsigned int rxCount;
+volatile unsigned char uartRxCmdRcv = 0;				//Command received flag
+char uartCommand[UART_RXBUF_MAX];					//received command string
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
@@ -88,16 +94,28 @@ void uart0Init(void)
 	
 	#if UART_USE_INTS == 1
 	//Initialise serial output buffer
-	head = 0;
-	tail = 0;
-	count = 0;
+	txHead = 0;
+	txTail = 0;
+	txCount = 0;
 	#endif
+}
+
+char *uart0GetCmd(uint8_t *cmdLen)
+{
+	if(uartRxCmdRcv)
+	{
+		*cmdLen = UART_RXBUF_MAX;	//Return the length of the receive buffer as a ref param
+		uartRxCmdRcv = 0;			//Reset the command received flag, as this command will be read
+		return uartCommand;			//Return the address to the receive buffer
+	}
+	*cmdLen = 0;
+	return 0;
 }
 
 #if UART_USE_INTS == 1
 /*
 * Function:
-* uint8_t uartOutputString(char* str)
+* uint8_t uart0OutputString(char* str)
 *
 * Allows the transmission of strings via UART WITH the use of interrupts
 *
@@ -109,13 +127,13 @@ void uart0Init(void)
 * none
 *
 */
-uint8_t uartOutputString(char* str)
+uint8_t uart0OutputString(char* str)
 {
 	int length = strlen(str);
 	UDREIntDisable;				// disable serial port 0 UDRE interrupt
 	
 	// check for too many chars
-	if (count + length >= UART_BUF_MAX)
+	if (txCount + length >= UART_TXBUF_MAX)
 	{
 		UDREIntEnable;			//enable serial port 0 UDRE interrupt
 		return 1;				//1 indicates error
@@ -124,13 +142,13 @@ uint8_t uartOutputString(char* str)
 	// write the characters into the buffer
 	for (int n = 0; n < length; n++)
 	{
-		buffer[tail] = str[n];
-		tail++;
-		if (tail >= UART_BUF_MAX)
-			tail = 0;
+		txBuffer[txTail] = str[n];
+		txTail++;
+		if (txTail >= UART_TXBUF_MAX)
+			txTail = 0;
 	}
 	
-	count += length;
+	txCount += length;
 	UDREIntEnable;				// enable serial port 0 UDRE interrupt
 	
 	return 0;
@@ -151,27 +169,51 @@ uint8_t uartOutputString(char* str)
 */
 ISR(USART0_UDRE_vect)
 {
-	if (count > 0) // if there are more characters
+	if (txCount > 0) // if there are more characters
 	{
-		UDR0 = buffer[head]; // transmit the next character
+		UDR0 = txBuffer[txHead]; // transmit the next character
 		// adjust the buffer variables
-		head++;
-		if (head > UART_BUF_MAX)
+		txHead++;
+		if (txHead > UART_TXBUF_MAX)
 		{
-			head = 0;
+			txHead = 0;
 		}
-		count--;
+		txCount--;
 	}
 	
-	if (count == 0) // if there are no more characters
+	if (txCount == 0) // if there are no more characters
 		UDREIntDisable; // then disable serial port 0 UDRE interrupt
+}
+
+// interrupt function
+ISR(USART0_RX_vect) // serial receive interrupt
+{
+	char ch;
+	static char rxBuffer[UART_RXBUF_MAX];	// receiving command
+	static int recIndex = 0;				// number of command chars
+	ch = UDR0;
+	if (ch >= ' ' && ch <= '~' && recIndex < UART_RXBUF_MAX - 1)
+	{
+		rxBuffer[recIndex] = ch;
+		recIndex++;
+	}
+	if (ch == '\r')
+	{
+		rxBuffer[recIndex] = 0;
+		if (!uartRxCmdRcv)
+		{
+			strcpy((char*)uartCommand, rxBuffer);
+			uartRxCmdRcv = 1;
+		}
+		recIndex = 0;
+	}
 }
 
 #else	//If not using interrupts
 
 /*
 * Function:
-* uint8_t uartOutputString(char* str)
+* uint8_t uart0OutputString(char* str)
 *
 * Allows the transmission of strings via UART WITHOUT the use of interrupts
 *
@@ -183,7 +225,7 @@ ISR(USART0_UDRE_vect)
 * none
 *
 */
-uint8_t uartOutputString(char* str)
+uint8_t uart0OutputString(char* str)
 {
 	int length = strlen(str);
 	// for each character in the string

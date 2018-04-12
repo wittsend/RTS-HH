@@ -23,8 +23,8 @@
 #define ROBOT_SETUP_H_
 
 //////////////[Includes]////////////////////////////////////////////////////////////////////////////
-#include <avr/io.h>		//Hardware specific register defines
-#include <stdint.h>		//Allows for specific integer variable sizes
+#include <avr/io.h>			//Hardware specific register defines
+#include <stdint.h>			//Allows for specific integer variable sizes
 
 //////////////[Public Defines]//////////////////////////////////////////////////////////////////////
 //State machine state definitions
@@ -63,11 +63,29 @@ typedef struct PositionData
 	uint8_t pollEnabled;	//Whether or not to poll the navigation data
 } PositionData;
 
+//Valid commands enumeration
+typedef enum RemoteControlCommands
+{
+	RC_CMD_NONE,
+	RC_CMD_GO,
+	RC_CMD_STOP
+} RemoteControlCommands;
+
+//The received command data structure
+typedef struct RemoteCommandData
+{
+	RemoteControlCommands cmd;	//Type of command
+	uint8_t newCmd;				//Whether this is a new command or not
+	float x;					//X parameter of command
+	float y;					//Y parameter of command
+} RemoteCommandData;
+
 //The root structure of the global data tree. 
 typedef struct RobotGlobalData
 {
 	StateMachines state;
-	PositionData pos;
+	PositionData pos;			//Holds position data
+	RemoteCommandData rc;		//The last command received from the PC
 	uint32_t timeStamp;
 	uint16_t pidUpdateInterval;	//How often to perform PID calculations
 	uint32_t pidNextPIDUpdate;	//When to perform the next PID calc
