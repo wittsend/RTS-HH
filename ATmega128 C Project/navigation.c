@@ -45,9 +45,6 @@
 //#define PULSE_ANG			0.06780		//Angle rotated in one pulse (PULSE_DIST/TRACK_WIDTH) (rad)
 #define PULSE_ANG			(PULSE_DIST/TRACK_WIDTH)//Angle rotated in one pulse 
 													//(PULSE_DIST/TRACK_WIDTH) (rad)
-
-//////////////[Private Global Variables]////////////////////////////////////////////////////////////
-
 //////////////[Private Functions]///////////////////////////////////////////////////////////////////
 /*
 * Function:

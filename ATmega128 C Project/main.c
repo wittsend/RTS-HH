@@ -34,9 +34,6 @@ int main(void)
 {
 	robotSetup(); // initialise ATmega128
 	
-	//uint8_t moveState = 1;	//This is the state of the state machine within M_GO_TO_POS that allows
-							//the robot to drive in a square.
-	
 	while (1) // loop forever
 	{
 		switch(sys.state.main)
@@ -54,26 +51,7 @@ int main(void)
 				if(sys.timeStamp >= sys.pidNextPIDUpdate)
 				{
 					sys.pidNextPIDUpdate = sys.timeStamp + sys.pidUpdateInterval;
-					//switch(moveState)
-					//{						
-						//case 1:
-							//if(!pidGoToPosition(1023, 0.6, 0, &sys)) moveState = 2;
-							//break;
-						//
-						//case 2:
-							//if(!pidGoToPosition(1023, 0	, 0, &sys)) moveState = 3;
-							//break;
-//
-						//case 3:
-							////if(!pidGoToPosition(1023, 0, 0.6, &sys)) moveState = 4;
-							//sys.state.main = M_IDLE;
-							//break;
-//
-						//case 4:
-							//if(!pidGoToPosition(1023, 0, 0, &sys)) sys.state.main = M_IDLE;
-							//break;
-					//}
-					break;
+					if(!pidGoToPosition(1023, sys.rc.x, sys.rc.y, &sys)) sys.state.main = M_IDLE;
 				}
 		}
 		

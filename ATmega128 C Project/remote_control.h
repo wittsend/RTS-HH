@@ -6,32 +6,21 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* Header for the remote control module.
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void rcExecuteCommand(RobotGlobalData *sys)
 *
 */
 
 #ifndef REMOTE_CONTROL_H_
 #define REMOTE_CONTROL_H_
 
-//////////////[Includes]////////////////////////////////////////////////////////////////////////////
-
-//////////////[Public Defines]//////////////////////////////////////////////////////////////////////
-
-//////////////[External Global Variables]///////////////////////////////////////////////////////////
-
-
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 void rcExecuteCommand(RobotGlobalData *sys);
-
-uint8_t rcGetCommand(RemoteCommandData *pCommand);
-
-
 
 #endif /* REMOTE_CONTROL_H_ */

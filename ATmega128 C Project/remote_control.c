@@ -6,14 +6,15 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* 1 or 2 liner on the purpose of the file
+* Looks for commands sent from the PC and has the robot act on them.
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
 * Relevant reference materials or datasheets if applicable
 *
 * Functions:
-* void funcName(void)
+* void rcExecuteCommand(RobotGlobalData *sys)
+* uint8_t rcGetCommand(RemoteCommandData *pCommand)
 *
 */
 
@@ -25,43 +26,34 @@
 #include "uart_driver.h"
 #include "remote_control.h"
 
-//////////////[Private Defines]/////////////////////////////////////////////////////////////////////
-
-//////////////[Private Global Variables]////////////////////////////////////////////////////////////
-
-//////////////[Functions]///////////////////////////////////////////////////////////////////////////
+//////////////[Private Functions]///////////////////////////////////////////////////////////////////
 /*
-* Function: 
-* [function declaration]
+* Function:
+* uint8_t rcGetCommand(RemoteCommandData *pCommand)
 *
-* [brief purpose of function]
+* If a command has been received on the UART, will extract the command and it's associated data
+* and store it in the global remote control data structure.
 *
 * Inputs:
-* [input arguments and any relevant explanation]
+* RemoteCommandData *pCommand:
+*	Pointer to the command data structure to store the command. (This is embedded into the "sys"
+*	structure).
 *
 * Returns:
-* [return values and any relevant explanation]
-*
-* Improvements:
-* [Ideas for improvements that are yet to be made](optional)
+*	A 1 if a new command has been received on the UART
 *
 */
-void rcExecuteCommand(RobotGlobalData *sys)
-{
-	uint8_t newCmd = rcGetCommand(&(sys->rc));
-	return;
-}
-
-
-uint8_t rcGetCommand(RemoteCommandData *pCommand)
+static uint8_t rcGetCommand(RemoteCommandData *pCommand)
 {
 	uint8_t cmdLen = 0;							//Stores the address to the command string
-	const char *pCmdData = uart0GetCmd(&cmdLen);	//See if a new command has been received on the UART
+	const char *pCmdData = uart0GetCmd(&cmdLen);//See if a new command has been received on the UART
 	
 	pCommand->newCmd = 0;
 	
+	//If the command length is greater than 0
 	if(cmdLen)
 	{
+		//Create the necessary vars on the stack
 		uint8_t readError = 0;
 		int n;
 		float f1, f2;
@@ -77,10 +69,10 @@ uint8_t rcGetCommand(RemoteCommandData *pCommand)
 				pCommand->x = f1;
 				pCommand->y = f2;
 				sprintf(str, "CMD GO %.3f,%.3f\r\n", f1, f2);
-			} else {
+				} else {
 				readError = 1;
 			}
-		}		
+		}
 
 		//If we have a STOP command
 		if (strncmp(pCmdData, "STOP", 4) == 0)
@@ -91,16 +83,59 @@ uint8_t rcGetCommand(RemoteCommandData *pCommand)
 			sprintf(str, "CMD STOP\r\n");
 		}
 		
-		if(readError) 
+		//If there was an error in the command string.
+		if(readError)
 		{
 			sprintf(str, "CMD ERROR\r\n");
 			pCommand->newCmd = 0;
-		} else {
+			} else {
 			pCommand->newCmd = 1;
 		}
 		
+		//Transmit message back to the PC.
 		uart0OutputString(str);
 	}
 	
 	return pCommand->newCmd;
+}
+
+//////////////[Functions]///////////////////////////////////////////////////////////////////////////
+/*
+* Function: 
+* void rcExecuteCommand(RobotGlobalData *sys)
+*
+* Checks for a new command from the PC, and if one has been sent, then set the main robot state
+* accordingly to execute it.
+*
+* Inputs:
+* RobotGlobalData *sys:
+*	Pointer to the global data structure
+*
+* Returns:
+* none
+*
+*/
+void rcExecuteCommand(RobotGlobalData *sys)
+{
+	//Look for a new command on the UART
+	uint8_t newCmd = rcGetCommand(&(sys->rc));
+	
+	if(newCmd)
+	{
+		//Set the main state to execute the received command.
+		switch(sys->rc.cmd)
+		{
+			case RC_CMD_GO:
+				sys->state.main = M_GO_TO_POS;
+				break;
+				
+			case RC_CMD_STOP:
+				sys->state.main = M_IDLE;
+				break;
+				
+			case RC_CMD_NONE:
+				break;	
+		}
+	}
+	return;
 }
