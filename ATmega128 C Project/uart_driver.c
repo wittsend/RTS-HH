@@ -6,7 +6,7 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* Initialises the serial comunication hardware and provides functions for using it.
+* Initialises the serial communication hardware and provides functions for using it.
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -43,7 +43,9 @@
 #define UART0_UBRR		12			//Baud rate setting (38400bps)
 
 #define UDREIntDisable	UCSR0B &= ~(1 << UDRIE0)
-#define UDREIntEnable	UCSR0B |= (1 << UDRIE0)	
+#define UDREIntEnable	UCSR0B |= (1 << UDRIE0)
+#define RXIntDisable	UCSR0B &= ~(1 << RXCIE0)
+#define RXIntEnable		UCSR0B |= (1 << RXCIE0)
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 #if UART_USE_INTS == 1
@@ -52,10 +54,8 @@ volatile char txBuffer[UART_TXBUF_MAX];				//buffer (queue) data
 volatile unsigned int txHead, txTail, txCount;		//buffer (queue) indexes
 #endif
 //Serial port 0 Receive buffer
-volatile char rxBuffer[UART_RXBUF_MAX];				//buffer (queue) data
-volatile unsigned int rxCount;
-volatile unsigned char uartRxCmdRcv = 0;				//Command received flag
-char uartCommand[UART_RXBUF_MAX];					//received command string
+volatile unsigned char uartRxCmdRcv = 0;			//Command received flag
+char uartCommand[UART_RXBUF_MAX];					//last received command string
 
 //////////////[Functions]///////////////////////////////////////////////////////////////////////////
 /*
@@ -185,8 +185,20 @@ ISR(USART0_UDRE_vect)
 		UDREIntDisable; // then disable serial port 0 UDRE interrupt
 }
 
-// interrupt function
-ISR(USART0_RX_vect) // serial receive interrupt
+/*
+* Function:
+* ISR(USART0_RX_vect)
+*
+* Interrupt service routine for UART0 Receive complete
+*
+* Inputs:
+* none
+*
+* Returns:
+* none
+*
+*/
+ISR(USART0_RX_vect)
 {
 	char ch;
 	static char rxBuffer[UART_RXBUF_MAX];	// receiving command
@@ -200,7 +212,7 @@ ISR(USART0_RX_vect) // serial receive interrupt
 	if (ch == '\r')
 	{
 		rxBuffer[recIndex] = 0;
-		if (!uartRxCmdRcv)
+		if (!uartRxCmdRcv)	//If the last command has not been processed, then do not load new cmd.
 		{
 			strcpy((char*)uartCommand, rxBuffer);
 			uartRxCmdRcv = 1;

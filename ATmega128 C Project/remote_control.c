@@ -54,10 +54,10 @@ static uint8_t rcGetCommand(RemoteCommandData *pCommand)
 	if(cmdLen)
 	{
 		//Create the necessary vars on the stack
-		uint8_t readError = 0;
-		int n;
-		float f1, f2;
-		char str[50];
+		uint8_t readError = 0;//If the number of parameters returned does not match what is expected
+		int n;					//The number of parameters found in a string
+		float f1, f2;			//The values of the extracted parameters
+		char str[50];			//A string that holds the command string
 
 		//If we have a GO command
 		if (strncmp(pCmdData, "GO", 2) == 0)
@@ -69,7 +69,7 @@ static uint8_t rcGetCommand(RemoteCommandData *pCommand)
 				pCommand->x = f1;
 				pCommand->y = f2;
 				sprintf(str, "CMD GO %.3f,%.3f\r\n", f1, f2);
-				} else {
+			} else {
 				readError = 1;
 			}
 		}
@@ -88,7 +88,7 @@ static uint8_t rcGetCommand(RemoteCommandData *pCommand)
 		{
 			sprintf(str, "CMD ERROR\r\n");
 			pCommand->newCmd = 0;
-			} else {
+		} else {
 			pCommand->newCmd = 1;
 		}
 		
