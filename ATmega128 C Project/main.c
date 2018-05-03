@@ -51,7 +51,11 @@ int main(void)
 				if(sys.timeStamp >= sys.pidNextPIDUpdate)
 				{
 					sys.pidNextPIDUpdate = sys.timeStamp + sys.pidUpdateInterval;
-					if(!pidGoToPosition(1023, sys.rc.x, sys.rc.y, &sys)) sys.state.main = M_IDLE;
+					if(!pidGoToPosition(1023, sys.rc.x, sys.rc.y, &sys)) 
+					{
+						sys.state.main = M_IDLE;
+						uart0OutputString("Command Complete\r\n");
+					}
 				}
 		}
 		
