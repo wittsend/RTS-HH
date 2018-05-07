@@ -6,7 +6,7 @@
 *
 * Project Repository: https://github.com/wittsend/RTS-HH
 *
-* The main file for Assignment 1
+* The main file for Assignment 2
 *
 * More Info:
 * Atmel ATmega128 Datasheet:http://ww1.microchip.com/downloads/en/DeviceDoc/doc2467.pdf
@@ -23,8 +23,6 @@
 #include "navigation.h"
 #include "pid_functions.h"
 #include "remote_control.h"
-
-//////////////[Defines]/////////////////////////////////////////////////////////////////////////////
 
 //////////////[Private Global Variables]////////////////////////////////////////////////////////////
 extern RobotGlobalData sys;
