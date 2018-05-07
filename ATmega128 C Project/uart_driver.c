@@ -100,6 +100,20 @@ void uart0Init(void)
 	#endif
 }
 
+/*
+* Function:
+* char *uart0GetCmd(uint8_t *cmdLen)
+*
+* If a new command string has been received on the UART, will return a pointer to the string in RAM
+*
+* Inputs:
+* char* cmdLen:
+*	Pointer to where the length of the command string will be stored
+*
+* Returns:
+* If a new command is waiting, a pointer to the command string, otherwise returns 0.
+*
+*/
 char *uart0GetCmd(uint8_t *cmdLen)
 {
 	if(uartRxCmdRcv)
