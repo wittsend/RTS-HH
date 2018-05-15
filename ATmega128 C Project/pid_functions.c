@@ -89,7 +89,7 @@ float pidRotateToHeading(float heading, RobotGlobalData *sys)
 	if(pErr < (-1*M_PI)) pErr += (2*M_PI);
 	
 	//Calculate proportional error values		
-	iErr += pErr;									//Integral error
+	iErr += (pErr + pErrOld)/2;						//Integral error
 	dErr = pErr - pErrOld;							//Derivative error
 	
 	//Store pErr for calculating dErr next time around.
@@ -164,8 +164,8 @@ float pidDriveToHeading(float speed, float heading, RobotGlobalData *sys)
 	if(pErr > M_PI)	pErr -= (2*M_PI);
 	if(pErr < (-1*M_PI)) pErr += (2*M_PI);
 
-	iErr += pErr;					//Integral error
-	dErr = pErr - pErrOld;			//Derivative error
+	iErr += (pErr + pErrOld)/2;			//Integral error
+	dErr = pErr - pErrOld;				//Derivative error
 	
 	//Store pErr for calculating dErr next time around.
 	pErrOld = pErr;
